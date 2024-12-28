@@ -5,7 +5,7 @@ import './index.css';
 import '@fontsource/montserrat/700.css';
 import '@fontsource/montserrat';
 import reportWebVitals from './reportWebVitals';
-import BloodConnectApp from '../../frontend/src/BloodConnectApp.js';
+import BloodConnectApp from '../src/BloodConnectApp.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
