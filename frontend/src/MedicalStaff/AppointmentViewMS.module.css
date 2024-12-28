@@ -1,0 +1,53 @@
+.mainContainer {
+  overflow: hidden;
+  padding-bottom: 38vh;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('../../public/Background.png');
+}
+
+.pageTitle {
+  color: #ae0d05;
+  margin: 37px 0;
+  font: 700 / Montserrat, sans-serif;
+  padding: 0 24px;
+}
+
+.appointmentGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 27px;
+  padding: 0 26px;
+  width: 100%;
+  max-width: 1439px;
+  margin: 0 auto;
+}
+
+@media (max-width: 991px) {
+  .pageTitle {
+    font-size: 40px;
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .appointmentGrid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+  }
+}
+
+.footer {
+    margin-top: 24px;
+  }
+  
+  .footerImage {
+    width: 100%;
+    height: auto;
+  }
+  
+  @media (max-width: 991px) {
+    .mainContent {
+      padding: 24px 20px;
+    }
+  }

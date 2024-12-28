@@ -1,0 +1,49 @@
+.contactBar {
+    background-color: #fff;
+    border-top: 1px solid #000;
+    padding: 12px 64px;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1500vw;
+    margin: 0 auto;
+  }
+  
+  .contactInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #ae0d05;
+  }
+  
+  .divider {
+    width: 1px;
+    height: 30px;
+    background-color: #676767;
+  }
+  
+  @media (max-width: 991px) {
+    .contactBar {
+      padding: 12px 20px;
+    }
+  
+    .container {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .contactInfo {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .divider {
+      display: none;
+    }
+  }

@@ -1,0 +1,42 @@
+.bloodTypeCard {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 270px;
+  }
+  
+  .typeLabel {
+    background-color: #931510;
+    color: #fbf5e9;
+    padding: 10px;
+    font: 600 20px Montserrat, sans-serif;
+    border: 1px solid #000;
+    border-right: none;
+  }
+  
+  .quantitySection {
+    background-color: #fff;
+    border: 1px solid #000;
+    padding: 10px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .quantityWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .quantityIcon {
+    width: 14px;
+    height: 20px;
+    object-fit: contain;
+  }
+  
+  .quantityValue {
+    font: 600 20px Montserrat, sans-serif;
+    color: #000;
+  }

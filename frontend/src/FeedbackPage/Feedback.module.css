@@ -1,0 +1,72 @@
+.background {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 90vh;
+    padding-top: 5vh;
+    padding-bottom: 8vh;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('../../public/Background.png');
+  }
+  
+  .content {
+    width: 80%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ae0d05;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .description {
+    font-size: 18px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .feedbackContainer {
+    margin-top: 20px;
+  }
+  
+  .textareaWrapper {
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 8px;
+    min-height: 396px;
+    width: 796px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .feedbackInput {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    border: none;
+    background: none;
+    font: 400 14px/2 Montserrat, sans-serif;
+    color: #424242;
+    resize: none;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  
+  .feedbackInput:focus {
+    outline: none;
+  }
+  

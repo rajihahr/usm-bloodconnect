@@ -1,0 +1,44 @@
+.appointmentCard {
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%; 
+    padding: 10px 10px; /* Adjust padding to reduce card size */
+    margin: 5px auto; /* Center the card horizontally */
+    border: 1px solid #bab7b7;
+  }
+  
+  .eventTitle {
+    color: #000;
+    font-size: 16px;
+    align-self: stretch;
+    flex: 1;
+    margin: auto 0;
+  }
+  
+  .viewButton {
+    align-self: stretch;
+    border-radius: 10px;
+    background: #4b7d8c;
+    padding: 8px 16px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  @media (max-width: 991px) {
+    .appointmentCard {
+      max-width: 100%;
+      padding-left: 20px;
+    }
+    .eventTitle {
+      max-width: 100%;
+    }
+    .viewButton {
+      white-space: initial;
+    }
+  }

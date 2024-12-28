@@ -1,0 +1,77 @@
+.appointmentCard {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 26px 20px;
+  width: 285px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1), 4px 0 6px rgba(0, 0, 0, 0.1), -4px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  color: #ae0d05;
+  font-family: Montserrat, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.details {
+  font-family: Montserrat, sans-serif;
+  font-size: 17px;
+  color: #000;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin-bottom: 10px;
+}
+
+.icon {
+  width: 29px;
+  height: 29px;
+  object-fit: contain;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.actionButton {
+  flex: 1;
+  background-color: #ffffff;
+  color: #4B7D8C;
+  border: 1px solid #4B7D8C;
+  border-radius: 4px;
+  padding: 11px 0;
+  font-family: Montserrat, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actionButton:hover { 
+  background-color: #4B7D8C;
+  color: #ffffff;
+  border: none;
+}
+
+.actionButton:disabled { 
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  border: none;
+}
+
+.actions a {
+  text-decoration: none; /* Remove underline */
+  flex: 1; /* Ensure it takes the same space as buttons */
+}
+
+.actions a > button {
+  width: 100%; /* Ensure button inside Link fills the Link space */
+}

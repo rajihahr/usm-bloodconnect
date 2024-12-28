@@ -1,0 +1,250 @@
+/* Table Container */
+.tableContainer {
+  width: 100%;
+  max-width: 100%; /* Ensures the table fits within the content width */
+  margin: 0 auto; /* Centers the table */
+}
+
+/* Button Container for Add Medical Staff */
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+/* Add Event Button */
+.addMedicalStaffButton {
+  background: #4b7d8c;
+  color: #fff;
+  border-radius: 4px;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+  border: none;
+  cursor: pointer;
+  min-height: 50px;
+  width: 100;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+/* Table */
+.table {
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #b9b9b9;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table Header */
+.table thead {
+  background: #ad1114;
+}
+
+.tableHeader th {
+  color: #fff;
+  padding: 10px 12px;
+  font: 600 12px/1.3 Montserrat, sans-serif;
+  text-align: left;
+  border-left: 1px solid #b9b9b9;
+}
+
+/* Table Body */
+.table tbody tr {
+  width: 100%;
+}
+
+.tableCell {
+  padding: 10px 12px;
+  font: 400 12px/1.3 Montserrat, sans-serif;
+  color: #000;
+  border-left: 1px solid #b9b9b9;
+  border-top: 1px solid #b9b9b9;
+  text-align: left;
+}
+
+.tableCell:first-child {
+  width: 3vw;
+}
+
+.tableCell:last-child,
+.tableCell:nth-last-child(2) {
+  width: 30px;
+  text-align: center;
+}
+
+/* Action Icon */
+.actionIcon {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+/* Popup Styling */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px 50px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  text-align: center;
+  width: 400px;
+}
+
+/* Popup Title */
+.popupTitle {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* Form Container */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* Form Labels */
+.formLabel {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #333;
+  text-align: left;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Form Inputs */
+.input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #b9b9b9;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  font: 400 14px/1.3 Montserrat, sans-serif;
+}
+
+/* Select Input */
+select.input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #b9b9b9;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Button Group in Popup */
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Submit Button */
+.submitButton {
+  background-color: #4b7d8c;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+  border: none;
+}
+
+/* Cancel Button */
+.cancelButton {
+  background-color: #ae0d05;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+  border: none;
+}
+
+/* Confirm Button */
+.confirmButton {
+  background-color: #4b7d8c;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+  border: none;
+}
+
+.successContainer {
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  overflow: hidden;
+  color: #000;
+  text-align: center;
+  letter-spacing: 0.44px;
+  justify-content: center;
+  padding: 20px;
+  font: 500 20px Montserrat, -apple-system, Roboto, Helvetica, sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@media (max-width: 991px) {
+  .successContainer {
+    padding: 100px 20px;
+  }
+}
+
+.successIcon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 70px;
+  width: 70px;
+  align-self: center;
+  max-width: 100%;
+}
+
+.successMessage {
+  margin-top: 24px;
+}
+
+@media (max-width: 991px) {
+  .successMessage {
+    max-width: 100%;
+  }
+}
+.successPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 2000; /* Ensure it's above the overlay and table */
+  padding: 20px;
+  text-align: center;
+}

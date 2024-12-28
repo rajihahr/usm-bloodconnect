@@ -1,0 +1,38 @@
+.question {
+    border-bottom: 1px solid #000;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 85px;
+    padding: 14px 0;
+  }
+  
+  .text {
+    color: #000;
+    letter-spacing: 0.48px;
+    flex: 1;
+    font: 200 14px Montserrat, sans-serif;
+  }
+  
+  .bold {
+    font-weight: 500;
+  }
+  
+  .options {
+    display: flex;
+    gap: 75px;
+    min-width: 175px;
+  }
+  
+  .radio {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 991px) {
+    .question {
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+  }

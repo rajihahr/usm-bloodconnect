@@ -1,0 +1,51 @@
+.organizationInfo {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .image {
+    flex: 1;
+    aspect-ratio: 1.1;
+    object-fit: contain;
+    max-width: 30%;
+  }
+  
+  .content {
+    flex: 3;
+  }
+  
+  .title {
+    font-family: Montserrat, sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1vh;
+    padding-left: 1vw;
+  }
+  
+  .description {
+    font-family: Montserrat, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 3vh;
+    color: #000;
+    text-align: justify;
+    margin-bottom: 20px;
+    padding-left: 1vw;
+  }
+  
+  @media (max-width: 991px) {
+    .organizationInfo {
+      flex-direction: column;
+    }
+  
+    .image {
+      align-self: center;
+      margin-top: 40px;
+    }
+  
+    .content {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+  }

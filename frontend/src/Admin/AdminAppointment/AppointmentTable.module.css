@@ -1,0 +1,125 @@
+.tableContainer {
+  width: 100%;
+  max-width: 100%; /* Ensures the table fits within the content width */
+  margin: 0 auto; /* Centers the table */
+}
+
+.table {
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #b9b9b9;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table Header */
+.table thead {
+background: #ad1114;
+}
+
+.tableHeader th {
+color: #fff;
+padding: 10px 12px;
+font: 600 12px/1.3 Montserrat, sans-serif;
+text-align: left;
+border-left: 1px solid #b9b9b9;
+}
+
+/* Table Body */
+.table tbody tr {
+width: 100%;
+}
+
+.tableCell {
+padding: 10px 12px;
+font: 400 12px/1.3 Montserrat, sans-serif;
+color: #000;
+border-left: 1px solid #b9b9b9;
+border-top: 1px solid #b9b9b9;
+text-align: left;
+}
+  
+  .headerCell {
+    color: #fff;
+    padding: 10px 12px;
+    font: 600 12px/1.3 Montserrat, sans-serif;
+    border-left: 1px solid #b9b9b9;
+    text-align: left;
+  }
+  
+  .headerCellButton {
+    color: #fff;
+    padding: 10px 12px;
+    width: 75px;
+    font: 600 12px/1.3 Montserrat, sans-serif;
+    border-left: 1px solid #b9b9b9;
+    text-align: center;
+  }
+  
+  .tableRow {
+    border: 1px solid #b9b9b9;
+  }
+
+  .tableCell:last-child,
+  .tableCell:nth-last-child(2) {
+    width: 30px;
+    text-align: center;
+  }
+  
+  .actionIcon {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+    margin-left: auto;  
+    margin-right: auto;
+  }
+  
+  .actionButton {
+    flex: 1;
+    background-color: #ffffff;
+    color: #4B7D8C;
+    border: 1px solid #4B7D8C;
+    border-radius: 4px;
+    padding: 11px 0;
+    width: 15vw;
+    font-family: Montserrat, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .actionButton:hover { 
+    background-color: #4B7D8C;
+    color: #ffffff;
+    border: none;
+  }
+  
+  .actionButton:disabled { 
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    border: none;
+  }
+  
+  .actions a {
+    text-decoration: none; /* Remove underline */
+    flex: 1; /* Ensure it takes the same space as buttons */
+  }
+  
+  .actions a > button {
+    width: 250px; /* Ensure button inside Link fills the Link space */
+  }
+  
+  @media (max-width: 991px) {
+    .tableContainer {
+      max-width: 100%;
+    }
+  }
+  

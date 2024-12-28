@@ -1,0 +1,41 @@
+.successContainer {
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  overflow: hidden;
+  color: #000;
+  text-align: center;
+  letter-spacing: 0.44px;
+  justify-content: center;
+  padding: 20px;
+  font: 500 20px Montserrat, -apple-system, Roboto, Helvetica, sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@media (max-width: 991px) {
+  .successContainer {
+    padding: 100px 20px;
+  }
+}
+
+.successIcon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 70px;
+  height: 70px;
+  align-self: center;
+  max-width: 100%;
+}
+
+.successMessage {
+  margin-top: 24px;
+}
+
+@media (max-width: 991px) {
+  .successMessage {
+    max-width: 100%;
+  }
+}

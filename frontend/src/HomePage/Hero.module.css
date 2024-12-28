@@ -1,0 +1,55 @@
+.hero {
+  background-color: #fff;
+  background-image: url('../../public/Poster.png');
+  background-size: cover;
+  background-position: center;
+  padding: 140px 50px;
+  display: flex;
+  justify-content: flex-start;
+}
+  
+  .content {
+    max-width: 514px;
+    margin-left: 44%;
+    margin-bottom: 7%;
+  }
+  
+  .title {
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 2000;
+    font-size: 84px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  
+  .details {
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-size: 21px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  
+  .actionArea {
+    margin-top: 16px;
+  }
+  
+  @media (max-width: 991px) {
+    .hero {
+      padding: 100px 20px;
+    }
+  
+    .content {
+      max-width: 100%;
+    }
+  
+    .title {
+      font-size: 40px;
+    }
+  
+    .details {
+      font-size: 18px;
+    }
+  }

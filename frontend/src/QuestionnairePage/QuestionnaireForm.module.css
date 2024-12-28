@@ -1,0 +1,116 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #FBF5E9;
+} 
+
+.title {
+  color: #ae0d05;
+  letter-spacing: 1.05px;
+  font: 700 35px/1 Montserrat;
+  text-align: center;
+}
+
+.subtitle {
+  color: #000;
+  letter-spacing: 0.42px;
+  margin-top: 0px;
+  margin-bottom: 2rem;
+  font: 200 14px/14px Montserrat, sans-serif;
+  text-align: center;
+  max-width: 844px;
+}
+
+.questionnaire {
+  background: #f7e6db;
+  margin-top: 32px;
+  width: 100%; /* Allows the questionnaire to expand with the page */
+  max-width: 750px; /* Keeps it within a max-width on larger screens */
+  padding: 32px;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  gap: 2px;
+  justify-content: flex-end;
+  font: 600 15px Montserrat;
+  margin-bottom: 4px;
+}
+
+/* Yes/No labels */
+.headerLabels {
+  display: flex;
+  gap: 73px;
+  width: 175px;
+}
+
+.questionList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.buttons {
+  display: flex;
+  margin-top: 35px;
+  gap: 16px;
+  justify-content: center;
+}
+
+.backButton {
+  border-radius: 4px;
+  background: #fff;
+  color: #4b7d8c;
+  padding: 16px 16px;
+  font: 550 14px Montserrat;
+  border: 1px solid #4b7d8c;
+  cursor: pointer;
+}
+
+.submitButton {
+  border-radius: 4px;
+  background: #4b7d8c;
+  color: #fff;
+  padding: 16px 16px;
+  font: 550 14px Montserrat;
+  border: none;
+  cursor: pointer;
+}
+
+.progressBar {
+  background-color: #e0e0e0;
+  height: 12px;
+  margin: 15px 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.progress {
+  background-color: #4b7d8c;
+  height: 100%;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  font-size: 14px;
+}
+
+
+@media (max-width: 991px) {
+  .container {
+    padding-top: 40px;
+  }
+
+  .questionnaire {
+    margin-top: 20px;
+    padding: 10px;
+  }
+
+  .buttons {
+    margin-top: 20px;
+  }
+}

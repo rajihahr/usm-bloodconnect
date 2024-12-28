@@ -1,0 +1,137 @@
+.bookAppointment {
+    overflow: hidden;
+    padding: 3vh 4vw;
+    padding-bottom: 11vh;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('../../public/Background.png');
+    
+}
+
+@media (max-width: 991px) {
+    .bookAppointment {
+        padding: 0 20px;
+    }
+}
+
+  .content {
+    display: flex;
+    margin-top: 3vh;
+    width: 100%;
+    flex-direction: column;
+    font-family: Montserrat, sans-serif;
+    justify-content: start;
+    flex: 1;
+    padding: 0 30px;
+  }
+  
+  @media (max-width: 991px) {
+    .content {
+      max-width: 100%;
+      padding: 0 10px;
+    }
+  }
+  
+  .eventInfo {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: start;
+  }
+  
+  @media (max-width: 991px) {
+    .eventInfo {
+      max-width: 100%;
+    }
+  }
+  
+  .eventTitle {
+    color: #ae0d05;
+    font-size: 37px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+  
+  @media (max-width: 991px) {
+    .eventTitle {
+      max-width: 100%;
+      font-size: 40px;
+    }
+  }
+  
+  .eventDetails {
+    margin-top: 1vh;
+    margin-bottom: 0;
+    width: 514px;
+    max-width: 100%;
+    font-size: 22px;
+    color: #000;
+    font-weight: 400;
+    line-height: 36px;
+  }
+  
+  @media (max-width: 991px) {
+    .eventDetails {
+      max-width: 100%;
+    }
+  }
+  
+  .doctorGrid {
+    display: flex;
+    margin-top: 3vh;
+    width: 100%;
+    align-items: center;
+    gap: 2vh 2vw;
+    font-weight: 400;
+    justify-content: start;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 991px) {
+    .doctorGrid {
+      max-width: 100%;
+    }
+  }
+  
+  .actions {
+    display: flex;
+    margin-top: 34px;
+    width: 100%;
+    align-items: start;
+    gap: 16px;
+    justify-content: center;
+    padding-bottom: 5vh;
+  }
+  
+  @media (max-width: 991px) {
+    .actions {
+      max-width: 100%;
+      padding: 0 20px;
+    }
+  }
+  
+  .confirmButton {
+    border-radius: 4px;
+    background-color: #4b7d8c;
+    color: #fff;
+    text-align: center;
+    font: 600 20px/1.2 Montserrat, sans-serif;
+    padding: 16px 24px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 991px) {
+    .confirmButton {
+      padding: 16px 20px;
+    }
+  }
+
+  .confirmButton.disabled {
+    background-color: #b0b0b0;  /* Grey out the button */
+    cursor: not-allowed;
+  }
+  

@@ -1,0 +1,75 @@
+.footer {
+  background-color: #931510;
+  color: #fff;
+  padding: 50px 0px 50px 0px;
+  position: relative; /* Ensure feedback button positions correctly relative to footer */
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+}
+
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  margin-left: 4vw;
+}
+
+.linkColumn {
+  min-width: 240px;
+}
+
+.columnTitle {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.linkList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.link {
+  color: #fff;
+  font-size: 18px;
+  text-decoration: none;
+  display: block;
+  padding: 8px 0;
+}
+
+.feedbackButton {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-right: 1.5vw; 
+  margin-top: 9vh;
+  padding: 16px 24px; 
+  transform: translateY(-50%) rotate(90deg); /* Rotate button and center vertically */
+  transform-origin: right;
+  background-color: #4b7d8c;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  white-space: nowrap; 
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for better visibility */
+}
+
+.feedbackButton:hover {
+  background-color: #37616f; /* Subtle hover effect */
+}
+
+@media (max-width: 991px) {
+  .feedbackButton {
+    top: auto;
+    bottom: 20px; /* Adjust position for smaller screens */
+    right: 10px; /* Add a small gap for smaller screens */
+    transform: rotate(0deg); /* Remove rotation for better usability */
+  }
+}
+

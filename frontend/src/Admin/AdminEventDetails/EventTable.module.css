@@ -1,0 +1,230 @@
+.warningMessage {
+  font-size: 16px;
+  font-family: Montserrat, sans-serif;
+  color: #333;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.successPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 2000; /* Ensure it's above the overlay and table */
+  padding: 20px;
+  text-align: center;
+}
+
+.popupTitle {
+  color: #ad1114;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.formLabel {
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Save and Cancel button container */
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.buttonGroup button {
+  width: 48%;
+}
+/* Overlay to mask background */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Greyish overlay */
+  z-index: 10;
+}
+
+/* Popup container */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px 100px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  width: 400px;
+  text-align: center;
+}
+
+/* Close Button */
+.closeButton {
+  margin-top: 10px;
+  margin-left: 10px;
+  background: #ae0d05;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+}
+
+/* Input Styles */
+.input {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Montserrat, sans-serif;
+}
+
+/* Submit Button */
+.submitButton {
+  background: #4b7d8c;
+  margin-top: 10px;
+  margin-left: 10px;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+}
+
+.cancelButton {
+  background-color: #ae0d05;
+  color: white;
+  border: none;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+}
+
+.confirmButton {
+  background-color: #4b7d8c;
+  color: white;
+  border: none;
+}
+
+.addEventButton {
+  background: #4b7d8c;
+  color: #fff;
+  border-radius: 4px;
+  font: 700 15px/1.6 Montserrat, sans-serif;
+  border: none;
+  cursor: pointer;
+  min-height: 50px;
+  width: 156px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.tableContainer {
+  width: 100%;
+  max-width: 100%; /* Ensures the table fits within the content width */
+  margin: 0 auto; /* Centers the table */
+}
+
+.table {
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #b9b9b9;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table Header */
+.table thead {
+background: #ad1114;
+}
+
+.tableHeader th {
+color: #fff;
+padding: 10px 12px;
+font: 600 12px/1.3 Montserrat, sans-serif;
+text-align: left;
+border-left: 1px solid #b9b9b9;
+}
+
+/* Table Body */
+.table tbody tr {
+width: 100%;
+}
+
+.tableCell {
+padding: 10px 12px;
+font: 400 12px/1.3 Montserrat, sans-serif;
+color: #000;
+border-left: 1px solid #b9b9b9;
+border-top: 1px solid #b9b9b9;
+text-align: left;
+}
+
+.tableHeader th:first-child {
+  width: 10px;
+}
+
+.tableHeader th:last-child,
+.tableHeader th:nth-last-child(2) {
+  width: 30px;
+}
+
+.tableCell:first-child {
+  width: 10px;
+}
+
+.tableCell:last-child,
+.tableCell:nth-last-child(2) {
+  width: 30px;
+  text-align: center;
+}
+
+.actionIcon {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+@media (max-width: 991px) {
+  .tableContainer {
+    max-width: 100%;
+    margin-top: 40px;
+  }
+
+  .table {
+    max-width: 100%;
+  }
+}

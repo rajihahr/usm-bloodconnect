@@ -1,0 +1,44 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90vh;
+  padding-top: 10vh;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('../../../public/Background.png');
+}
+
+  .eventContainer {
+    width: 80%;
+    margin: 0;
+    padding: 0;
+}
+
+.eventTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ae0d05;
+  text-align: left; /* Aligns the title to the left */
+  margin-bottom: 40px;
+}
+
+
+@media (max-width: 991px) {
+  .eventTitle {
+    max-width: 100%;
+    font-size: 40px;
+  }
+}
+
+  @media (max-width: 991px) {
+    .eventContainer {
+      padding: 0 20px;
+      max-width: 100%;
+    }
+    
+    .eventTitle {
+      font-size: 40px;
+    }
+  }
