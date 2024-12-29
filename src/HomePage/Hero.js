@@ -17,11 +17,11 @@ const Hero = ({user}) => {
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
-        <h2 className={styles.title}>Jom Derma Darah 1998</h2>
+        <h2 className={styles.title}>Jom Derma Darah 2024</h2>
         <p className={styles.details}>
-          Date: 25th December 1998<br />
+          Date: 25th December 2024<br />
           Time: 8.00 AM - 5.00 PM<br />
-          Venue: Dewan Utama Pelajar, UTM
+          Venue: Dewan Utama Pelajar, USM
         </p>
         <div className={styles.actionArea}>
           <Button text="Book Now!" variant="cta" onClick={handleBookNow} />
