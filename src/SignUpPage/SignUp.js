@@ -29,7 +29,7 @@ const SignUp = ({ onSignUp }) => {
       console.log('Sending sign-up request:', { name, email, dob, password });
 
       // Send the POST request to the server
-      const response = await fetch('http://localhost:8081/sign-up', {
+      const response = await fetch('http://bloodconnect.site/sign-up', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
