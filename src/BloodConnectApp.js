@@ -49,9 +49,7 @@ const BloodConnectApp = () => {
 
   const handleSignUp = (userData) => {
     setUser(userData); // Save user data (includes role)
-    if (userData.role === 'user') {
-      navigate('/');
-    }
+      navigate('/sign-in');
   };
 
   const handleSignOut = () => {
