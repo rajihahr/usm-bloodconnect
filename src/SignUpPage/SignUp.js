@@ -12,27 +12,63 @@ const SignUp = ({ onSignUp }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // Define successMessage state
   const navigate = useNavigate();
   const location = useLocation();
 
-  const formatDateToDDMMYYYY = (date) => {
-    const [year, month, day] = date.split('-');
-    return `${day}/${month}/${year}`;
-  };
-
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-  
-    const formattedDob = formatDateToDDMMYYYY(dob); // Convert to DD/MM/YYYY
-  
-    if (name === 'User' && email === 'user@email.com' && formattedDob === '23/11/2024' && password === 'user123') {
-      const userData = { name, email, dob: formattedDob, role: 'user' }; // Use formattedDob here if needed
-      onSignUp(userData);
-      navigate('/');
-    } 
-    
-    else {
-      setError('Invalid signup details');
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      console.log('Sending sign-up request:', { name, email, dob, password });
+
+      // Send the POST request to the server
+      const response = await fetch('http://localhost:8081/sign-up', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          donorName: name,
+          donorEmail: email,
+          donorPassword: password,
+          donorDOB: dob, // If backend requires this format
+        }),
+      });
+
+      // Check if response is successful
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error from backend:', errorData);
+        setError(errorData.message || 'Failed to sign up.');
+        setSuccessMessage('');
+        return;
+      }
+
+      // Parse JSON response
+      const data = await response.json();
+      console.log('Sign-up response:', data); // Log server response
+
+      // If successful, display success message and navigate
+      if (data.success) {
+        setError(''); // Clear any error messages
+        setSuccessMessage('Donor added successfully!'); // Set success message
+        onSignUp(data.user); // Pass user data to parent (if needed)
+        navigate('/sign-in'); // Navigate to homepage or any other page
+      } else {
+        setSuccessMessage(''); // Clear success message if sign-up fails
+        setError(data.message || 'Failed to sign up.');
+      }
+    } catch (error) {
+      console.error('Error during sign-up:', error);
+      setError('Something went wrong. Please try again.');
+      setSuccessMessage(''); // Clear success message in case of error
     }
   };
 
@@ -100,7 +136,9 @@ const SignUp = ({ onSignUp }) => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          {successMessage && <p className={styles.success}>{successMessage}</p>}
           {error && <p className={styles.error}>{error}</p>}
+
           <button
             type="submit"
             className={`${styles.submitButton} ${isFormValid ? styles.enabled : styles.disabled}`}
