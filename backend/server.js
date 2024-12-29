@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 const corsOptions = {
-    origin: 'http://bloodconnect.site', // or the URL where your React app is running
+    origin: 'https://bloodconnect.site', // or the URL where your React app is running
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
 };
