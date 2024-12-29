@@ -21,7 +21,7 @@ const Hero = ({user}) => {
         <p className={styles.details}>
           Date: 25th December 1998<br />
           Time: 8.00 AM - 5.00 PM<br />
-          Venue: Dewan Utama Pelajar, USM
+          Venue: Dewan Utama Pelajar, UTM
         </p>
         <div className={styles.actionArea}>
           <Button text="Book Now!" variant="cta" onClick={handleBookNow} />
