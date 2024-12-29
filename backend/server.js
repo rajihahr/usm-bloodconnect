@@ -9,11 +9,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 const corsOptions = {
-    origin: 'https://bloodconnect.site', // or the URL where your React app is running
+    origin: 'https://bloodconnect.site',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
 };
-
 app.use(cors(corsOptions));
 
 const db = mysql.createPool({
@@ -51,6 +50,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // User login
 app.post('/sign-in', (req, res) => {
     const { email, password } = req.body;
+    console.log('Request body:', req.body);
 
     // Query donor table
     const donorQuery = "SELECT donorEmail AS email, donorPassword AS password, donorRole AS role FROM donor WHERE donorEmail = ? AND donorPassword = ?";

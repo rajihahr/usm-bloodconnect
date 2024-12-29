@@ -14,7 +14,6 @@ const SignIn = ({ onSignIn }) => {
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-    
         try {
             const response = await fetch('https://bloodconnect.site/sign-in', {
                 method: 'POST',
@@ -23,14 +22,13 @@ const SignIn = ({ onSignIn }) => {
                 },
                 body: JSON.stringify({ email, password }),
             });
-    
+            console.log('Response:', response); // Log raw response
             const data = await response.json();
-    
+            console.log('Parsed data:', data); // Log parsed response
+            
             if (data.success) {
-                onSignIn(data.user); // Pass user data to parent component
+                onSignIn(data.user);
                 const role = data.user.role;
-    
-                // Navigate based on user role
                 if (role === 'donor') {
                     navigate('/');
                 } else if (role === 'admin') {
@@ -42,7 +40,7 @@ const SignIn = ({ onSignIn }) => {
                 setError(data.message);
             }
         } catch (error) {
-            console.error('Error during sign in:', error);
+            console.error('Error during sign-in:', error);
             setError('Something went wrong. Please try again.');
         }
     };
