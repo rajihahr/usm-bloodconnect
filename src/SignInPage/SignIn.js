@@ -16,7 +16,7 @@ const SignIn = ({ onSignIn }) => {
         e.preventDefault();
     
         try {
-            const response = await fetch('https://bloodconnect.site/login', {
+            const response = await fetch('https://bloodconnect.site/sign-in', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -49,7 +49,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // User login
-app.post('/login', (req, res) => {
+app.post('/sign-in', (req, res) => {
     const { email, password } = req.body;
 
     // Query donor table
