@@ -14,7 +14,7 @@ const SignIn = ({ onSignIn }) => {
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-
+    
         try {
             const response = await fetch('http://localhost:8081/login', {
                 method: 'POST',
@@ -23,16 +23,19 @@ const SignIn = ({ onSignIn }) => {
                 },
                 body: JSON.stringify({ email, password }),
             });
-
+    
             const data = await response.json();
-
+    
             if (data.success) {
                 onSignIn(data.user); // Pass user data to parent component
-                if (data.user.role === 'user') {
+                const role = data.user.role;
+    
+                // Navigate based on user role
+                if (role === 'donor') {
                     navigate('/');
-                } else if (data.user.role === 'admin') {
+                } else if (role === 'admin') {
                     navigate('/admin-home');
-                } else if (data.user.role === 'medical-staff') {
+                } else if (role === 'medical-staff') {
                     navigate('/appointment-view-ms');
                 }
             } else {
@@ -43,6 +46,7 @@ const SignIn = ({ onSignIn }) => {
             setError('Something went wrong. Please try again.');
         }
     };
+    
 
     const isFormValid = email.trim() !== '' && password.trim() !== '';
 

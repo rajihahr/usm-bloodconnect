@@ -16,7 +16,7 @@ const Header = ({ user, onSignOut }) => {
   // Conditionally add the "Appointments" link based on user role (user or medical-staff)
   const userNavLinks = [
     ...allNavLinks,
-    { text: 'Appointments', path: user?.role === 'user' ? '/appointment-view' : '/' },
+    { text: 'Appointments', path: user?.role === 'donor' ? '/appointment-view' : '/' },
   ];
 
   const staffNavLinks = [
