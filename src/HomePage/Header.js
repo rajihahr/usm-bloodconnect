@@ -66,7 +66,7 @@ const Header = ({ user, onSignOut }) => {
         {/* Render user greeting and sign-out button if user is signed in */}
         {user ? (
           <div className={styles.userSection}>
-            <span className={styles.userName}>Hi, {user.name}!</span>
+            <span className={styles.userName}>Hi, {user.name}!</span> 
             <Button text="Sign Out" variant="secondary" onClick={onSignOut} />
           </div>
         ) : (
