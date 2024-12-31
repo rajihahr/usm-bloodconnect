@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./EventTable.module.css";
 import { SuccessMessage } from "./SuccessMessage";
 import { EditSuccessMessage } from "./EditSuccess";
 import { DeleteSuccessMessage } from "./DeleteSuccess";
 
-const EventTable = ({ events }) => {
+const EventTable = ({ eventList }) => {
+  const [events, setEvents] = useState([]); // State to store the fetched events
   const [isPopupOpen, setIsPopupOpen] = useState(false); /*To add event*/
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -13,17 +14,37 @@ const EventTable = ({ events }) => {
   const [isDeleteSuccessPopupOpen, setIsDeleteSuccessPopupOpen] =
     useState(false);
 
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
-  };
+  // Function format date
+  function formatDateOnly(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  }
 
-  const toggleUpdatePopup = () => {
-    setIsUpdatePopupOpen(!isUpdatePopupOpen);
-  };
+  // Fetch data from the server when the component mounts
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/admin-event");
+        const data = await response.json();
 
-  const toggleDeletePopup = () => {
-    setIsDeletePopupOpen(!isDeletePopupOpen);
-  };
+        console.log("Fetched events data:", data); // Log the fetched data
+      
+        setEvents(data.events); // Set the events data in the state
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const togglePopup = () => { setIsPopupOpen(!isPopupOpen); };
+  const toggleUpdatePopup = () => { setIsUpdatePopupOpen(!isUpdatePopupOpen); };
+  const toggleDeletePopup = () => { setIsDeletePopupOpen(!isDeletePopupOpen); };
 
   // This is to save the event being added
   const handleSave = (e) => {
@@ -46,7 +67,7 @@ const EventTable = ({ events }) => {
     setIsDeleteSuccessPopupOpen(true);
     setTimeout(() => setIsDeleteSuccessPopupOpen(false), 3000);
   };
-
+  
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table}>
@@ -69,13 +90,13 @@ const EventTable = ({ events }) => {
         <tbody>
           {events.map((event, index) => (
             <tr key={event.id} className={styles.tableRow}>
-              <td className={styles.tableCell}>{index + 1}</td>
-              <td className={styles.tableCell}>{event.name}</td>
-              <td className={styles.tableCell}>{event.date}</td>
-              <td className={styles.tableCell}>{event.location}</td>
+              <td className={styles.tableCell}>{event.eventID}</td>
+              <td className={styles.tableCell}>{event.eventName}</td>
+              <td className={styles.tableCell}>{formatDateOnly(event.eventDate)}</td>
+              <td className={styles.tableCell}>{event.eventLocation}</td>
               <td className={styles.tableCell}>{event.startTime}</td>
               <td className={styles.tableCell}>{event.endTime}</td>
-              <td className={styles.tableCell}>{event.status}</td>
+              <td className={styles.tableCell}>{event.status.charAt(0).toUpperCase() + event.status.slice(1)}</td> 
               <td className={styles.tableCell}>
                 <img
                   src="/DeleteRow.png"
