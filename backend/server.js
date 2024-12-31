@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: "https://bloodconnect.site",
-  //origin: "http://localhost:3000",
+  // origin: "https://bloodconnect.site",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 };
@@ -136,6 +136,24 @@ app.post("/sign-up", (req, res) => {
       }
     );
   });
+});
+
+// Admin Event Management
+app.get("/admin-event", (req, res) => {
+    const query = "SELECT * FROM event"; // Adjust the table name if necessary
+    
+    db.query(query, (err, eventdata) => {
+      if (err) {
+        console.error("Error querying events:", err);
+        return res.status(500).json({ error: true, message: "Error querying events." });
+      }
+
+      if (eventdata.length === 0) {
+        return res.json({ events: [], message: "No events found." });
+      }
+
+      res.json({ events: eventdata });
+    });
 });
 
 app.listen(8081, () => {
