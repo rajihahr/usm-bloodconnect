@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: "https://bloodconnect.site",
-  //origin: "http://localhost:3000",
+//   origin: "https://bloodconnect.site",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 };
