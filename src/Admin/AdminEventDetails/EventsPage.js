@@ -3,17 +3,7 @@ import EventTable from './EventTable';
 import styles from './EventsPage.module.css';
 
 const EventsPage = () => {
-  const events = [
-    {
-      id: 1,
-      name: 'Jom Derma Darah 2024',
-      date: '25/12/2024',
-      location: 'Dewan Utama Pelajar',
-      startTime: '08:00 AM',
-      endTime: '05:00 PM',
-      status: 'Ongoing'
-    }
-  ];
+  const events = [{}];
 
   return (
     <div className={styles.background}>
