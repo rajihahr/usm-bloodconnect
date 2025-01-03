@@ -1,28 +1,32 @@
-import React, { useState } from 'react';
-import QuestionnaireQuestion from './QuestionnaireQuestion'; // Assuming this is the component for each question
-import styles from './QuestionnaireForm.module.css';
-import Popup from './Popup';
-import IneligiblePopup from './IneligiblePopup';
-import IncompleteFormPopup from './IncompleteFormPopup';
-import { Link } from 'react-router-dom';
-
-const questions = [
-  'Do you know or suspect that you may have <strong>HIV</strong>?',
-  'Are you suffering from / carrier of <strong>Hepatitis B</strong> or <strong>Hepatitis C</strong>?',
-  'Have you been infected by <strong>Syphilis</strong>?',
-  'Have you been infected by <strong>other Sexually Transmitted Diseases</strong>?',
-  'Do you lead or had led a lifestyle involving <strong>changing multiple sexual partners</strong>?',
-  'Are you a <strong>man</strong> who have had sex with <strong>another man</strong> or <strong>bisexual</strong>?',
-  'Have you had sex with a <strong>commercial sex worker</strong> (prostitute)?',
-  'Have you ever taken <strong>illegal drugs intravenously</strong>?',
-  'Have you ever had <strong>sex with any of the previous group?</strong>',
-];
+// QuestionnaireForm.js
+import React, { useState, useEffect } from "react";
+import QuestionnaireQuestion from "./QuestionnaireQuestion"; // Assuming this is the component for each question
+import styles from "./QuestionnaireForm.module.css";
+import Popup from "./Popup";
+import IneligiblePopup from "./IneligiblePopup";
+import IncompleteFormPopup from "./IncompleteFormPopup";
+import { Link } from "react-router-dom";
 
 export default function QuestionnaireForm() {
+  const [questions, setQuestions] = useState([]); // State to store fetched questions
   const [answers, setAnswers] = useState({}); // Track answers
   const [showEligiblePopup, setShowEligiblePopup] = useState(false);
   const [showIneligiblePopup, setShowIneligiblePopup] = useState(false);
   const [showIncompleteFormPopup, setShowIncompleteFormPopup] = useState(false);
+
+  // Fetch questions from the backend
+  useEffect(() => {
+    fetch("http://localhost:8081/questions")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setQuestions(data.questions);
+        } else {
+          console.error("Error fetching questions:", data.message);
+        }
+      })
+      .catch((error) => console.error("Error fetching questions:", error));
+  }, []);
 
   // Calculate progress percentage
   const answeredQuestionsCount = Object.keys(answers).length;
@@ -30,8 +34,8 @@ export default function QuestionnaireForm() {
   const progressPercentage = Math.round((answeredQuestionsCount / totalQuestions) * 100);
 
   // Handle answer change for each question
-  const handleChange = (question, value) => {
-    setAnswers((prev) => ({ ...prev, [question]: value }));
+  const handleChange = (questionID, value) => {
+    setAnswers((prev) => ({ ...prev, [questionID]: value }));
   };
 
   // Submit handler to check eligibility
@@ -43,7 +47,7 @@ export default function QuestionnaireForm() {
       return;
     }
 
-    const isEligible = questions.every((question) => answers[question] === 'No');
+    const isEligible = Object.values(answers).every((answer) => answer === "No");
 
     if (isEligible) {
       setShowEligiblePopup(true);
@@ -67,11 +71,7 @@ export default function QuestionnaireForm() {
 
       {/* Progress Bar */}
       <div className={styles.progressBar}>
-        <div
-          className={styles.progress}
-          style={{ width: `${progressPercentage}%` }}
-        >
-        </div>
+        <div className={styles.progress} style={{ width: `${progressPercentage}%` }}></div>
       </div>
 
       <form className={styles.questionnaire} onSubmit={handleSubmit}>
@@ -83,12 +83,12 @@ export default function QuestionnaireForm() {
         </div>
 
         <div className={styles.questionList}>
-          {questions.map((question, index) => (
+          {questions.map((question) => (
             <QuestionnaireQuestion
-              key={index}
-              question={question}
-              value={answers[question] || ''}
-              onChange={(value) => handleChange(question, value)}
+              key={question.questionID}
+              question={question.questionText}
+              value={answers[question.questionID] || ""}
+              onChange={(value) => handleChange(question.questionID, value)}
             />
           ))}
         </div>
@@ -107,21 +107,11 @@ export default function QuestionnaireForm() {
 
       {/* Popups */}
       {showEligiblePopup && (
-        <Popup
-          message="Let's schedule your appointment so you can make a difference."
-          onClose={handleClosePopup}
-        />
+        <Popup message="Let's schedule your appointment so you can make a difference." onClose={handleClosePopup} />
       )}
-      {showIneligiblePopup && (
-        <IneligiblePopup
-          onClose={handleClosePopup}
-        />
-      )}
+      {showIneligiblePopup && <IneligiblePopup onClose={handleClosePopup} />}
       {showIncompleteFormPopup && (
-        <IncompleteFormPopup
-          message="Please answer all questions before submitting."
-          onClose={handleClosePopup}
-        />
+        <IncompleteFormPopup message="Please answer all questions before submitting." onClose={handleClosePopup} />
       )}
     </section>
   );

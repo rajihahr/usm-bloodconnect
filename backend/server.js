@@ -138,6 +138,19 @@ app.post("/sign-up", (req, res) => {
   });
 });
 
+// Fetch questions
+app.get("/questions", (req, res) => {
+  const query = "SELECT * FROM question";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching questions:", err);
+      return res.status(500).json({ success: false, message: "Error fetching questions." });
+    }
+    res.json({ success: true, questions: results });
+  });
+});
+
+
 app.listen(8081, () => {
   console.log("listening");
 });
