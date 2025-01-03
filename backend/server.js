@@ -59,112 +59,72 @@ app.post("/sign-up", (req, res) => {
   });
 });
 
-const jwt = require("jsonwebtoken");
-
-// Middleware for JWT verification
-function verifyToken(req, res, next) {
-  const token = req.header("Authorization")?.split(" ")[1]; // Get the token from the header
-
-  if (!token) {
-    return res.status(403).json({ success: false, message: "No token provided." });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ success: false, message: "Invalid or expired token." });
-    }
-    req.user = decoded; // Attach the decoded data to the request object
-    next();
-  });
-}
-
-// Add a new admin
-app.post("/add-admin", verifyToken, (req, res) => {
-  // Check if the user is an admin
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Unauthorized: Only admins can add new admins." });
-  }
-
-  const { adminName, adminEmail, adminPassword, adminDOB } = req.body;
-
-  if (!adminName || !adminEmail || !adminPassword || !adminDOB) {
-    return res.status(400).json({ success: false, message: "All fields are required." });
-  }
-
-  // Hash the admin password
-  bcrypt.hash(adminPassword, saltRounds, (err, hashedPassword) => {
-    if (err) {
-      console.error("Error hashing password:", err);
-      return res.status(500).json({ success: false, message: "Error encrypting password." });
-    }
-
-    // Insert the new admin into the database
-    const insertAdminQuery = "INSERT INTO admin (adminName, adminEmail, adminPassword, adminDOB) VALUES (?, ?, ?, ?)";
-    db.query(insertAdminQuery, [adminName, adminEmail, hashedPassword, adminDOB], (err, result) => {
-      if (err) {
-        console.error("Error inserting admin:", err);
-        return res.status(500).json({ success: false, message: "Error saving admin to database." });
-      }
-      res.status(201).json({ success: true, message: "New admin added successfully." });
-    });
-  });
-});
-
 // User sign-in with password comparison
-app.post("/sign-in", (req, res) => {
+app.post("/sign-in", async (req, res) => {
   const { email, password } = req.body;
 
-  // Query donor table
-  const donorQuery =
-    "SELECT donorID AS id, donorName AS name, donorEmail AS email, donorPassword AS password, 'donor' AS role FROM donor WHERE donorEmail = ?";
-  db.query(donorQuery, [email], async (donorErr, donorData) => {
-    if (donorErr) return res.json({ error: true, message: "Error querying database." });
-    if (donorData.length > 0) {
-      const donor = donorData[0];
-      const isMatch = await bcrypt.compare(password, donor.password); // bcrypt for donor
-      if (isMatch) {
-        return res.json({ success: true, user: donor });
-      } else {
-        return res.json({ success: false, message: "Invalid email or password." });
+  try {
+    // Query donor table
+    const donorQuery = "SELECT donorID AS id, donorName AS name, donorEmail AS email, donorPassword AS password, 'donor' AS role FROM donor WHERE donorEmail = ?";
+    db.query(donorQuery, [email], async (donorErr, donorData) => {
+      if (donorErr) {
+        return res.json({ error: true, message: "Error querying database." });
       }
-    }
 
-    // Query medicalStaff table
-    const medicalStaffQuery =
-      "SELECT staffID AS id, staffName AS name, staffEmail AS email, staffPassword AS password, 'medical-staff' AS role FROM medicalStaff WHERE staffEmail = ?";
-    db.query(medicalStaffQuery, [email], (staffErr, staffData) => {  // No bcrypt for medical staff
-      if (staffErr) return res.json({ error: true, message: "Error querying database." });
-      if (staffData.length > 0) {
-        const staff = staffData[0];
-        if (password === staff.password) { // Plain text comparison for medical staff
-          return res.json({ success: true, user: staff });
+      if (donorData.length > 0) {
+        const donor = donorData[0];
+        const isMatch = await bcrypt.compare(password, donor.password); // bcrypt for donor
+        if (isMatch) {
+          return res.json({ success: true, user: donor });
         } else {
           return res.json({ success: false, message: "Invalid email or password." });
         }
       }
 
-      // Query admin table
-      const adminQuery =
-        "SELECT adminID AS id, adminName AS name, adminEmail AS email, adminPassword AS password, 'admin' AS role FROM admin WHERE adminEmail = ?";
-      db.query(adminQuery, [email], (adminErr, adminData) => {  // No bcrypt for admin
-        if (adminErr) return res.json({ error: true, message: "Error querying database." });
-        if (adminData.length > 0) {
-          const admin = adminData[0];
-          if (password === admin.password) { // Plain text comparison for admin
-            return res.json({ success: true, user: admin });
+      // Query medicalStaff table
+      const medicalStaffQuery = "SELECT staffID AS id, staffName AS name, staffEmail AS email, staffPassword AS password, 'medical-staff' AS role FROM medicalStaff WHERE staffEmail = ?";
+      db.query(medicalStaffQuery, [email], async (staffErr, staffData) => {  // No bcrypt for medical staff
+        if (staffErr) {
+          return res.json({ error: true, message: "Error querying database." });
+        }
+        if (staffData.length > 0) {
+          const staff = staffData[0];
+          if (password === staff.password) { // Plain text comparison for medical staff
+            return res.json({ success: true, user: staff });
           } else {
             return res.json({ success: false, message: "Invalid email or password." });
           }
         }
 
-        // No match found in any table
-        return res.json({
-          success: false,
-          message: "Invalid email or password.",
+        // Query admin table
+        const adminQuery = "SELECT adminID AS id, adminName AS name, adminEmail AS email, adminPassword AS password, 'admin' AS role FROM admin WHERE adminEmail = ?";
+        db.query(adminQuery, [email], async (adminErr, adminData) => {  // bcrypt for admin
+          if (adminErr) {
+            return res.json({ error: true, message: "Error querying database." });
+          }
+
+          if (adminData.length > 0) {
+            const admin = adminData[0];
+            const isMatch = await bcrypt.compare(password, admin.password); // bcrypt for admin
+            if (isMatch) {
+              return res.json({ success: true, user: admin });
+            } else {
+              return res.json({ success: false, message: "Invalid email or password." });
+            }
+          }
+
+          // No match found in any table
+          return res.json({
+            success: false,
+            message: "Invalid email or password.",
+          });
         });
       });
     });
-  });
+  } catch (err) {
+    console.error("Error processing sign-in:", err);
+    return res.status(500).json({ success: false, message: "Internal server error." });
+  }
 });
 
 // Fetch questions
