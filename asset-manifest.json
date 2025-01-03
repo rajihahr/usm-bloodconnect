@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "https://bloodconnect.site/static/css/main.71c23e44.css",
-    "main.js": "https://bloodconnect.site/static/js/main.87c07dcc.js",
+    "main.css": "https://bloodconnect.site/static/css/main.3317ae3f.css",
+    "main.js": "https://bloodconnect.site/static/js/main.65fb3463.js",
     "static/js/453.dfbd6a8c.chunk.js": "https://bloodconnect.site/static/js/453.dfbd6a8c.chunk.js",
     "static/media/Poster.png": "https://bloodconnect.site/static/media/Poster.308aaed06f3bdfe664b1.png",
     "static/media/montserrat-latin-700-normal.woff": "https://bloodconnect.site/static/media/montserrat-latin-700-normal.f1715a34ee999e9315e6.woff",
@@ -26,12 +26,12 @@
     "static/media/montserrat-vietnamese-700-normal.woff2": "https://bloodconnect.site/static/media/montserrat-vietnamese-700-normal.d274db79ab234f7cb0d3.woff2",
     "static/media/montserrat-vietnamese-400-normal.woff2": "https://bloodconnect.site/static/media/montserrat-vietnamese-400-normal.176348415471f3e062e6.woff2",
     "index.html": "https://bloodconnect.site/index.html",
-    "main.71c23e44.css.map": "https://bloodconnect.site/static/css/main.71c23e44.css.map",
-    "main.87c07dcc.js.map": "https://bloodconnect.site/static/js/main.87c07dcc.js.map",
+    "main.3317ae3f.css.map": "https://bloodconnect.site/static/css/main.3317ae3f.css.map",
+    "main.65fb3463.js.map": "https://bloodconnect.site/static/js/main.65fb3463.js.map",
     "453.dfbd6a8c.chunk.js.map": "https://bloodconnect.site/static/js/453.dfbd6a8c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.71c23e44.css",
-    "static/js/main.87c07dcc.js"
+    "static/css/main.3317ae3f.css",
+    "static/js/main.65fb3463.js"
   ]
 }
