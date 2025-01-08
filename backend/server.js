@@ -5,19 +5,17 @@ const cors = require("cors");
 const db = require("./db"); // Importing db.js to handle database queries
 
 const saltRounds = 10;
-
 const app = express();
-app.use(cors());
+
 app.use(express.json());
 app.use(bodyParser.json());
 
-const corsOptions = {
+app.use(cors({
   // origin: "https://bloodconnect.site",
   origin: "http://localhost:3000",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
-};
-app.use(cors(corsOptions));
+}));
 
 // Sign up with password hashing
 app.post("/sign-up", (req, res) => {
@@ -136,6 +134,93 @@ app.get("/questions", (req, res) => {
       return res.status(500).json({ success: false, message: "Error fetching questions." });
     }
     res.json({ success: true, questions: results });
+  });
+});
+
+// Add New Event Details
+app.post("/admin-event", (req, res) => {
+  const { eventName, eventDate, eventLocation, startTime, endTime, status } = req.body;
+
+  if (!eventName || !eventDate || !eventLocation || !startTime || !endTime || !status) 
+  { 
+    return res.status(400).json({ 
+    error: true, message: "All fields are required." });
+  }
+
+  const addEventsql = 'INSERT INTO event (eventName, eventDate, eventLocation, startTime, endTime, status) VALUES (?, ?, ?, ?, ?, ?)'; 
+  const values = [eventName, eventDate, eventLocation, startTime, endTime, status];
+
+  console.log("New event values:", values);
+
+  db.query(addEventsql, values, (err, result) => 
+    { if (err) {
+      console.error('Error saving the event:', err); 
+      return res.status(500).json({ error: true, message: 'Error saving the event.' }); 
+    }      
+  });
+});
+
+// Retrieve Event Details to Display
+app.get("/admin-event", (req, res) => { 
+    const query = "SELECT * FROM event"; // Adjust the table name if necessary
+    
+    db.query(query, (err, eventdata) => {
+      if (err) {
+        console.error("Error querying events:", err);
+        return res.status(500).json({ error: true, message: "Error querying events." });
+      }
+
+      if (eventdata.length === 0) {
+        return res.json({ events: [], message: "No events found." });
+      }
+
+      res.json({ events: eventdata });
+    });
+});
+
+// Update Event Details
+app.put("/admin-event/:id", (req, res) => {
+  const { id } = req.params; 
+  const { eventName, eventDate, eventLocation, startTime, endTime, status } = req.body;
+
+  if (!eventName || !eventDate || !eventLocation || !startTime || !endTime || !status) {
+    return res.status(400).json({ error: true, message: "All fields are required." });
+  }
+
+  const updateEventSql = 'UPDATE event SET eventName = ?, eventDate = ?, eventLocation = ?, startTime = ?, endTime = ?, status = ? WHERE eventID = ?';
+  const values = [eventName, eventDate, eventLocation, startTime, endTime, status, id];
+
+  db.query(updateEventSql, values, (err, result) => {
+    if (err) {
+      console.error('Error updating the event:', err);
+      return res.status(500).json({ error: true, message: 'Error updating the event.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: true, message: "Event not found." });
+    }
+
+    res.status(200).json({ success: true, message: 'Event updated successfully.' });
+  });
+});
+
+// Delete Event
+app.delete("/admin-event/:id", (req, res) => {
+  const { id } = req.params;
+
+  const deleteEventSql = "DELETE FROM event WHERE eventID = ?";
+
+  db.query(deleteEventSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting event:", err);
+      return res.status(500).json({ error: true, message: "Error deleting the event." });
+    }  
+   
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: true, message: "Event not found." });
+    }
+
+    res.status(200).json({ success: true, message: "Event deleted successfully." });
   });
 });
 
