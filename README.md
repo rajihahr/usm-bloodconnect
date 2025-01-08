@@ -1,3 +1,20 @@
+# BloodConnect USM 
+
+BloodConnect USM is a centralized web application platform to streamline blood donation events managed by our client, Pusat Sejahtera USM. The platform aims to enhance donor engagement and ensure smoother event operations by providing essential tools and functionalities for both donors and event organizers.
+
+These are the main functionalities proposed in the system: 
+* Appointment Scheduling 
+* Eligibility Check and Pre-donation Questionnaire 
+* Event Details Management 
+* Blood Bank Data
+
+## How to Get Started
+1. Sign Up: Create a donor account by inputting the required details.
+2. Explore Events: Browse upcoming blood donation events that are featured on the homepage.
+3. Check Eligibility: Complete the pre-donation questionnaire to ensure you meet the requirements to donate blood.
+4. Schedule an Appointment: Select an event and choose a specific time slot under a doctor of your choice to confirm the slot.
+   
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
