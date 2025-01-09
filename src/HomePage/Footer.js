@@ -1,9 +1,20 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import styles from './Footer.module.css';
 
 const Footer = ({ user }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { donorID } = location.state || {};  
+  console.log("Donor ID from location:", donorID);
+
+  const handleFeedback = () => {
+    if (user?.role === 'donor') {
+      navigate('/feedback',{ state: { donorID: donorID} });
+    }
+  };
 
   const footerLinks = [
     {
@@ -38,7 +49,7 @@ const Footer = ({ user }) => {
       {user && (
         <button
           className={styles.feedbackButton}
-          onClick={() => navigate('/feedback')}
+          onClick={handleFeedback}
         >
           Feedback
         </button>

@@ -143,6 +143,23 @@ app.post("/sign-in", async (req, res) => {
   }
 });
 
+// Save feedback responses
+app.post("/feedback", (req, res) => {
+  const { feedbackText, donorID } = req.body;
+  console.log("Feedback submission received:", { feedbackText, donorID });
+
+  const insertFeedbackSql = "INSERT INTO feedback (feedbackText, donorID) VALUES (?, ?)";
+  db.query(insertFeedbackSql, [feedbackText, donorID], (err, result) => {
+    if (err) {
+      console.error("Error  inserting feedback into database:", err);
+      return res.status(500).json({ success: false, message: "Error saving feedback to database." });
+    }
+    console.log("Feedback inserted successfully:", result);
+    return res.status(201).json({ success: true, message: "Feedback submitted successfully." });
+  });
+});
+
+
 // Fetch questions
 app.get("/questions", (req, res) => {
   const query = "SELECT * FROM question";
