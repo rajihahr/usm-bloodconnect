@@ -4,31 +4,32 @@
     justify-content: flex-start; /* Ensures the content starts at the top */
     padding: 0 20px; /* Adds padding to prevent the cards from touching the edge */
     overflow: hidden; /* Hides any overflow */
-}
-
-.authContainer {
+  }
+  
+  .authContainer {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     min-height: 100vh;
     min-width: fit-content;
-    background-image: url('../../../public/Background.png');
+    /* background-image: url("../../../public/Background.png"); */
+    background-color: rgb(249, 240, 227);
     background-size: cover; /* Ensures the background is applied and doesn't interfere with the grid */
     background-position: bottom;
     background-repeat: no-repeat;
-}
-
-.dashboardTitle {
+  }
+  
+  .dashboardTitle {
     color: #931510;
     text-align: center;
     justify-items: center;
     font: 700 30px Montserrat, sans-serif;
-    margin-top: 15vh;
-    margin-bottom: 10vh;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
     flex: 1;
-}
-
-.bloodStatsGrid {
+  }
+  
+  .bloodStatsGrid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* Ensures the grid is centered */
@@ -36,40 +37,50 @@
     margin-bottom: 54px;
     width: 100%;
     position: relative; /* Keeps the grid from being affected by the background */
-}
-
-.bloodStatsGrid > div {
+  }
+  
+  .bloodStatsGrid > div {
     flex: 1 1 230px; /* Ensures the cards have a minimum width and flex within the grid */
     max-width: 300px; /* Ensures cards don't stretch too large */
     display: flex;
     justify-content: center; /* Centers each card */
-}
-
-.analyticsChart {
+  }
+  .analyticsChartContainer {
+    display: flex;
+    justify-content: center;
     width: 100%;
-    margin-top: 24px;
-}
-
-@media (max-width: 991px) {
+    margin-bottom: 30px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .analyticsChartContainer > div {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 991px) {
     .dashboardTitle {
-        margin: 40px 0;
-        font-size: 26px; /* Smaller title size for mobile */
+      margin: 40px 0;
+      font-size: 26px; /* Smaller title size for mobile */
     }
-
+  
     .bloodStatsGrid {
-        padding: 0 20px;
-        margin-bottom: 40px;
-        flex-direction: column; /* Stack items in a column layout on mobile */
+      padding: 0 20px;
+      margin-bottom: 40px;
+      flex-direction: column; /* Stack items in a column layout on mobile */
     }
-
+  
     .bloodStatsGrid > div {
-        flex: 1 1 100%; /* Cards take up full width on mobile */
-        max-width: 100%; /* Ensure no card stretches beyond screen width */
+      flex: 1 1 100%; /* Cards take up full width on mobile */
+      max-width: 100%; /* Ensure no card stretches beyond screen width */
     }
-}
-
-@media (max-width: 991px) {
+  }
+  
+  @media (max-width: 991px) {
     .mainContent {
-        padding: 24px 20px;
+      padding: 24px 20px;
     }
-}
+  }
