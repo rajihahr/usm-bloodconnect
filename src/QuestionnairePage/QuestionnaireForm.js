@@ -1,5 +1,6 @@
 // QuestionnaireForm.js
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import QuestionnaireQuestion from "./QuestionnaireQuestion"; // Assuming this is the component for each question
 import styles from "./QuestionnaireForm.module.css";
 import Popup from "./Popup";
@@ -13,6 +14,14 @@ export default function QuestionnaireForm() {
   const [showEligiblePopup, setShowEligiblePopup] = useState(false);
   const [showIneligiblePopup, setShowIneligiblePopup] = useState(false);
   const [showIncompleteFormPopup, setShowIncompleteFormPopup] = useState(false);
+
+  // Access eventId passed from the previous page
+  const location = useLocation();
+  const { eventId } = location.state || {};  // Get eventId from location state
+
+  useEffect(() => {
+    console.log("Event ID:", eventId);  // Carry eventID
+  }, [eventId]);
 
   // Fetch questions from the backend
   useEffect(() => {
@@ -47,13 +56,41 @@ export default function QuestionnaireForm() {
       return;
     }
 
-    const isEligible = Object.values(answers).every((answer) => answer === "No");
-
-    if (isEligible) {
-      setShowEligiblePopup(true);
-    } else {
-      setShowIneligiblePopup(true);
-    }
+     // Prepare data to be sent to the backend
+  const questionResponses = Object.entries(answers).map(([questionID, answer]) => ({
+    questionID,
+    answer,  // 'Yes' or 'No' answer
+    eventId,  // Send event ID to associate the response with the event
+    donorID: 73 //need to change using session
+  }));
+  
+    // Send the responses to the backend to be saved in the database
+  fetch("http://localhost:8081/saveResponses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(questionResponses),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        console.log("Responses saved successfully");    
+        
+        // Determine eligibility after saving responses
+        const isEligible = Object.values(answers).every((answer) => answer === "No");
+        if (isEligible) {
+          setShowEligiblePopup(true);
+        } else {
+          setShowIneligiblePopup(true);
+        }
+      } else {
+        console.error("Error saving responses:", data.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Error saving responses:", error);
+    });
   };
 
   const handleClosePopup = () => {
