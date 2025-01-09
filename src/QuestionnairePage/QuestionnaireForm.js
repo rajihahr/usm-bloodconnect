@@ -18,6 +18,9 @@ export default function QuestionnaireForm() {
   // Access eventId passed from the previous page
   const location = useLocation();
   const { eventId } = location.state || {};  // Get eventId from location state
+  const { donorID } = location.state || {};
+  console.log("Event ID from location:", eventId);
+  console.log("Donor ID from location:", donorID);
 
   useEffect(() => {
     console.log("Event ID:", eventId);  // Carry eventID
@@ -61,7 +64,7 @@ export default function QuestionnaireForm() {
     questionID,
     answer,  // 'Yes' or 'No' answer
     eventId,  // Send event ID to associate the response with the event
-    donorID: 73 //need to change using session
+    donorID //need to change using session
   }));
   
     // Send the responses to the backend to be saved in the database
@@ -85,7 +88,7 @@ export default function QuestionnaireForm() {
           setShowIneligiblePopup(true);
         }
       } else {
-        console.error("Error saving responses:", data.message);
+          console.error("Error saving responses:", data.message); 
       }
     })
     .catch((error) => {

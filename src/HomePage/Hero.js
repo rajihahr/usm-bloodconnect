@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
 import Button from './Button';
@@ -6,10 +7,14 @@ import Button from './Button';
 const Hero = ({user}) => {
   const [event, setEvent] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { donorID } = location.state || {};  
+  console.log("Donor ID from location:", donorID);
 
   const handleBookNow = () => {
     if (user?.role === 'donor') {
-      navigate('/questionnaire-start-page',{ state: { eventId: event.eventID } }); // Redirect to sign-in page if not signed in
+      navigate('/questionnaire-start-page',{ state: { donorID: donorID, eventId: event.eventID } }); // Redirect to sign-in page if not signed in
     } else {
       navigate('/sign-in'); // Proceed to booking if signed in
     }

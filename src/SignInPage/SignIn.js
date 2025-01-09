@@ -30,7 +30,7 @@ const SignIn = ({ onSignIn }) => {
         const { role, id } = data.user;
         console.log("User ID:", id);
         if (role === "donor") {
-          navigate("/"); // Redirect to donor homepage
+          navigate("/",{ state: { donorID: id } }); // Redirect to donor homepage
         } else if (role === "admin") {
           navigate("/admin-home"); // Redirect to admin homepage
         } else if (role === "medical-staff") {
