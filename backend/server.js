@@ -35,6 +35,26 @@ app.get("/", (req, res) => {
   });
 });
 
+// Display Event Details in Appointment Page
+app.get("/eventAppointment/:eventID", (req, res) => {
+  const eventID = req.params.eventID; // Get eventID from the URL parameter
+  
+  const query = "SELECT * FROM event WHERE eventID = ?"; // Query to fetch the event from the database
+  
+  db.query(query, [eventID], (err, eventdata) => {
+    if (err) {
+      console.error("Error querying events:", err);
+      return res.status(500).json({ error: true, message: "Error querying events." });
+    }
+
+    if (eventdata.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.json({ event: eventdata[0] });
+  });
+});
+
 // Sign up with password hashing
 app.post("/sign-up", (req, res) => {
   const { donorName, donorEmail, donorPassword, donorDOB } = req.body;
