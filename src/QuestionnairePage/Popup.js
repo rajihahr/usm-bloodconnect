@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Popup.module.css';
 import { Link } from 'react-router-dom';
 
-const Popup = ({ onClose, onBookAppointment }) => {
+const Popup = ({ onClose, onBookAppointment, donorID, eventID }) => {
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popupContent}>
@@ -20,7 +20,7 @@ const Popup = ({ onClose, onBookAppointment }) => {
           <button className={styles.closeButton} onClick={onClose}>
             Home
           </button></Link>
-          <Link to="/book-appointment">
+          <Link to="/book-appointment" state={{ donorID, eventID }}>
           <button className={styles.bookButton} onClick={onBookAppointment}>
             Book Appointment
           </button></Link>

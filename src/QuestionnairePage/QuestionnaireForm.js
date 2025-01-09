@@ -14,6 +14,7 @@ export default function QuestionnaireForm() {
   const [showEligiblePopup, setShowEligiblePopup] = useState(false);
   const [showIneligiblePopup, setShowIneligiblePopup] = useState(false);
   const [showIncompleteFormPopup, setShowIncompleteFormPopup] = useState(false);
+  const [popupData, setPopupData] = useState({ donorID: null, eventID: null });
 
   // Access eventId passed from the previous page
   const location = useLocation();
@@ -84,6 +85,10 @@ export default function QuestionnaireForm() {
         const isEligible = Object.values(answers).every((answer) => answer === "No");
         if (isEligible) {
           setShowEligiblePopup(true);
+          setPopupData({
+            donorID: donorID,
+            eventID: eventId, 
+          });
         } else {
           setShowIneligiblePopup(true);
         }
@@ -147,7 +152,11 @@ export default function QuestionnaireForm() {
 
       {/* Popups */}
       {showEligiblePopup && (
-        <Popup message="Let's schedule your appointment so you can make a difference." onClose={handleClosePopup} />
+        <Popup message="Let's schedule your appointment so you can make a difference." 
+        onClose={handleClosePopup}
+        donorID={popupData.donorID}
+        eventID={popupData.eventID}
+        />
       )}
       {showIneligiblePopup && <IneligiblePopup onClose={handleClosePopup} />}
       {showIncompleteFormPopup && (
