@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './FeedbackTable.module.css';
 import Popup from './Popup';
 
-// Sample feedback data
-const initialFeedbacks = [
-  { feedbackId: 1, donorId: 'D001', feedback: 'Great experience!' },
-  { feedbackId: 2, donorId: 'D002', feedback: 'Very efficient process.' },
-  { feedbackId: 3, donorId: 'D003', feedback: 'Friendly staff.' },
-  { feedbackId: 4, donorId: 'D004', feedback: 'Comfortable environment.' },
-  { feedbackId: 5, donorId: 'D005', feedback: 'Smooth process to schedule an appointment.' },
-  { feedbackId: 6, donorId: 'D006', feedback: 'Great way to save time for queueing up.' },
-];
-
 export default function FeedbackTable() {
-  const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedFeedbackId, setSelectedFeedbackId] = useState(null);
+
+  // Fetch feedback data from the server
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await fetch('http://localhost:8081/feedbacks');
+        const data = await response.json();
+        if (data.success) {
+          setFeedbacks(data.feedbacks);
+        } else {
+          console.error("Error fetching feedbacks:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching feedbacks:", error);
+      }
+    };
+
+    fetchFeedbacks();
+  }, []);
 
   // Show the popup and set the selected feedback ID
   const showPopup = (id) => {
@@ -30,10 +39,22 @@ export default function FeedbackTable() {
   };
 
   // Confirm deletion and remove the feedback
-  const confirmDelete = () => {
-    const updatedFeedbacks = feedbacks.filter((feedback) => feedback.feedbackId !== selectedFeedbackId);
-    setFeedbacks(updatedFeedbacks);
-    hidePopup();
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:8081/feedback/${selectedFeedbackId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
+        const updatedFeedbacks = feedbacks.filter((feedback) => feedback.feedbackID !== selectedFeedbackId);
+        setFeedbacks(updatedFeedbacks);
+        hidePopup();
+      } else {
+        console.error("Error deleting feedback:", data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+    }
   };
 
   return (
@@ -49,15 +70,15 @@ export default function FeedbackTable() {
         </thead>
         <tbody>
           {feedbacks.map((feedback) => (
-            <tr key={feedback.feedbackId} className={styles.tableRow}>
-              <td className={styles.tableCell}>{feedback.feedbackId}</td>
-              <td className={styles.tableCell}>{feedback.donorId}</td>
-              <td className={styles.tableCell}>{feedback.feedback}</td>
+            <tr key={feedback.feedbackID} className={styles.tableRow}>
+              <td className={styles.tableCell}>{feedback.feedbackID}</td>
+              <td className={styles.tableCell}>{feedback.donorID}</td>
+              <td className={styles.tableCell}>{feedback.feedbackText}</td>
               <td className={styles.tableButtonCell}>
-                 <img 
+                <img 
                   src="/DeleteRow.png" 
                   alt="Delete" 
-                  onClick={() => showPopup(feedback.feedbackId)}
+                  onClick={() => showPopup(feedback.feedbackID)}
                   className={styles.deleteIcon} 
                 />
               </td>
