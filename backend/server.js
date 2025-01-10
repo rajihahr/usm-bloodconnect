@@ -179,6 +179,33 @@ app.post("/feedback", (req, res) => {
   });
 });
 
+// Fetch feedbacks
+app.get("/feedbacks", (req, res) =>
+  { const query = "SELECT * FROM feedback";
+    db.query(query, (err, results) =>
+      { if (err) {
+        console.error("Error fetching feedbacks:", err);
+        return res.status(500).json({ success: false, message: "Error fetching feedbacks from database." });
+      }
+      return res.status(200).json({ success: true, feedbacks: results });
+    });
+  });
+  
+  // Delete feedback
+  app.delete("/feedback/:id", (req, res) => {
+    const { id } = req.params;
+    const deleteFeedbackSql = "DELETE FROM feedback WHERE feedbackID = ?";
+    db.query(deleteFeedbackSql, [id], (err, result) => {
+      if (err) {
+        console.error("Error deleting feedback from database:", err);
+        return res.status(500).json({ success: false, message: "Error deleting feedback from database." });
+      } if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Feedback not found." });
+      }
+      return res.status(200).json({ success: true, message: "Feedback deleted successfully." });
+    });
+  });
+
 
 // Fetch questions
 app.get("/questions", (req, res) => {
