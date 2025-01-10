@@ -12,7 +12,9 @@ const Footer = ({ user }) => {
 
   const handleFeedback = () => {
     if (user?.role === 'donor') {
-      navigate('/feedback',{ state: { donorID: donorID} });
+      const donorIdToPass = donorID || user.id; // Ensure donorID is always passed
+      console.log("Passing Donor ID:", donorIdToPass);
+      navigate('/feedback', { state: { donorID: donorIdToPass } });
     }
   };
 
