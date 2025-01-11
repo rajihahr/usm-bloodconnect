@@ -1,31 +1,33 @@
 // QuestionnaireForm.js
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import QuestionnaireQuestion from "./QuestionnaireQuestion"; // Assuming this is the component for each question
+import QuestionnaireQuestion from "./QuestionnaireQuestion";
 import styles from "./QuestionnaireForm.module.css";
 import Popup from "./Popup";
 import IneligiblePopup from "./IneligiblePopup";
 import IncompleteFormPopup from "./IncompleteFormPopup";
 import { Link } from "react-router-dom";
 
-export default function QuestionnaireForm() {
-  const [questions, setQuestions] = useState([]); // State to store fetched questions
-  const [answers, setAnswers] = useState({}); // Track answers
+export default function QuestionnaireForm({ user }) {  // Add user prop
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
   const [showEligiblePopup, setShowEligiblePopup] = useState(false);
   const [showIneligiblePopup, setShowIneligiblePopup] = useState(false);
   const [showIncompleteFormPopup, setShowIncompleteFormPopup] = useState(false);
   const [popupData, setPopupData] = useState({ donorID: null, eventID: null });
 
-  // Access eventId passed from the previous page
+  // Get eventId from location state, but donorID from user session
   const location = useLocation();
-  const { eventId } = location.state || {};  // Get eventId from location state
-  const { donorID } = location.state || {};
+  const { eventId } = location.state || {};
+  const donorID = user?.id;  // Get donorID from session
+
   console.log("Event ID from location:", eventId);
-  console.log("Donor ID from location:", donorID);
+  console.log("Donor ID from session:", donorID);
 
   useEffect(() => {
-    console.log("Event ID:", eventId);  // Carry eventID
-  }, [eventId]);
+    console.log("Event ID:", eventId);
+    console.log("User data:", user);  // Log user data to verify
+  }, [eventId, user]);
 
   // Fetch questions from the backend
   useEffect(() => {
@@ -46,12 +48,10 @@ export default function QuestionnaireForm() {
   const totalQuestions = questions.length;
   const progressPercentage = Math.round((answeredQuestionsCount / totalQuestions) * 100);
 
-  // Handle answer change for each question
   const handleChange = (questionID, value) => {
     setAnswers((prev) => ({ ...prev, [questionID]: value }));
   };
 
-  // Submit handler to check eligibility
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -60,45 +60,45 @@ export default function QuestionnaireForm() {
       return;
     }
 
-     // Prepare data to be sent to the backend
-  const questionResponses = Object.entries(answers).map(([questionID, answer]) => ({
-    questionID,
-    answer,  // 'Yes' or 'No' answer
-    eventId,  // Send event ID to associate the response with the event
-    donorID //need to change using session
-  }));
+    // Prepare data to be sent to the backend
+    const questionResponses = Object.entries(answers).map(([questionID, answer]) => ({
+      questionID,
+      answer,
+      eventId,
+      donorID  // This now comes from the session
+    }));
   
-    // Send the responses to the backend to be saved in the database
-  fetch("http://localhost:8081/saveResponses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(questionResponses),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        console.log("Responses saved successfully");    
-        
-        // Determine eligibility after saving responses
-        const isEligible = Object.values(answers).every((answer) => answer === "No");
-        if (isEligible) {
-          setShowEligiblePopup(true);
-          setPopupData({
-            donorID: donorID,
-            eventID: eventId, 
-          });
-        } else {
-          setShowIneligiblePopup(true);
-        }
-      } else {
-          console.error("Error saving responses:", data.message); 
-      }
+    // Send the responses to the backend
+    fetch("http://localhost:8081/saveResponses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',  // Include credentials for session
+      body: JSON.stringify(questionResponses),
     })
-    .catch((error) => {
-      console.error("Error saving responses:", error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Responses saved successfully");    
+          
+          const isEligible = Object.values(answers).every((answer) => answer === "No");
+          if (isEligible) {
+            setShowEligiblePopup(true);
+            setPopupData({
+              donorID: donorID,
+              eventID: eventId, 
+            });
+          } else {
+            setShowIneligiblePopup(true);
+          }
+        } else {
+          console.error("Error saving responses:", data.message); 
+        }
+      })
+      .catch((error) => {
+        console.error("Error saving responses:", error);
+      });
   };
 
   const handleClosePopup = () => {

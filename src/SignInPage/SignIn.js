@@ -20,8 +20,10 @@ const SignIn = ({ onSignIn }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // Important for session cookies
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
       console.log("Parsed data:", data);
 
@@ -29,12 +31,13 @@ const SignIn = ({ onSignIn }) => {
         onSignIn(data.user);
         const { role, id } = data.user;
         console.log("User ID:", id);
+
         if (role === "donor") {
-          navigate("/",{ state: { donorID: id } }); // Redirect to donor homepage
+          navigate("/", { state: { donorID: id } });
         } else if (role === "admin") {
-          navigate("/admin-home"); // Redirect to admin homepage
+          navigate("/admin-home");
         } else if (role === "medical-staff") {
-          navigate("/appointment-view-ms"); // Redirect to medical staff page
+          navigate("/appointment-view-ms");
         }
       } else {
         setError(data.message);

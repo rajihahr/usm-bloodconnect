@@ -2,20 +2,45 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const db = require("./db"); // Importing db.js to handle database queries
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const db = require("./db");
 
 const saltRounds = 10;
 const app = express();
 
+// Middleware setup
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
+// Session configuration
+app.use(session({
+  secret: 'your-secret-key',  // Change this to a secure secret
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    maxAge: 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Updated CORS configuration to allow credentials
 app.use(cors({
-  // origin: "https://bloodconnect.site",
   origin: "http://localhost:3000",
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
+  credentials: true // Important for sessions to work with CORS
 }));
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ success: false, message: "Not authenticated" });
+  }
+};
 
 // Display Event on HomePage
 app.get("/", (req, res) => { 
@@ -95,7 +120,7 @@ app.post("/sign-up", (req, res) => {
   });
 });
 
-// User sign-in with password comparison
+// Updated sign-in route with session management
 app.post("/sign-in", async (req, res) => {
   const { email, password } = req.body;
 
@@ -109,47 +134,63 @@ app.post("/sign-in", async (req, res) => {
 
       if (donorData.length > 0) {
         const donor = donorData[0];
-        const isMatch = await bcrypt.compare(password, donor.password); // bcrypt for donor
+        const isMatch = await bcrypt.compare(password, donor.password);
         if (isMatch) {
+          // Set session data
+          req.session.user = {
+            id: donor.id,
+            name: donor.name,
+            email: donor.email,
+            role: donor.role
+          };
           return res.json({ success: true, user: donor });
-        } else {
-          return res.json({ success: false, message: "Invalid email or password." });
         }
       }
 
       // Query medicalStaff table
       const medicalStaffQuery = "SELECT staffID AS id, staffName AS name, staffEmail AS email, staffPassword AS password, 'medical-staff' AS role FROM medicalStaff WHERE staffEmail = ?";
-      db.query(medicalStaffQuery, [email], async (staffErr, staffData) => {  // No bcrypt for medical staff
+      db.query(medicalStaffQuery, [email], async (staffErr, staffData) => {
         if (staffErr) {
           return res.json({ error: true, message: "Error querying database." });
         }
         if (staffData.length > 0) {
           const staff = staffData[0];
-          if (password === staff.password) { // Plain text comparison for medical staff
+          if (password === staff.password) {
+            // Set session data
+            req.session.user = {
+              id: staff.id,
+              name: staff.name,
+              email: staff.email,
+              role: staff.role
+            };
             return res.json({ success: true, user: staff });
-          } else {
-            return res.json({ success: false, message: "Invalid email or password." });
           }
         }
 
         // Query admin table
         const adminQuery = "SELECT adminID AS id, adminName AS name, adminEmail AS email, adminPassword AS password, 'admin' AS role FROM admin WHERE adminEmail = ?";
-        db.query(adminQuery, [email], async (adminErr, adminData) => {  // bcrypt for admin
+        db.query(adminQuery, [email], async (adminErr, adminData) => {
           if (adminErr) {
             return res.json({ error: true, message: "Error querying database." });
           }
 
           if (adminData.length > 0) {
             const admin = adminData[0];
-            const isMatch = await bcrypt.compare(password, admin.password); // bcrypt for admin
+            const isMatch = await bcrypt.compare(password, admin.password);
             if (isMatch) {
+              // Set session data
+              req.session.user = {
+                id: admin.id,
+                name: admin.name,
+                email: admin.email,
+                role: admin.role
+              };
+              console.log("Donor Session data:", req.session);
+              console.log("Donor Session ID:", req.sessionID);
               return res.json({ success: true, user: admin });
-            } else {
-              return res.json({ success: false, message: "Invalid email or password." });
             }
           }
 
-          // No match found in any table
           return res.json({
             success: false,
             message: "Invalid email or password.",
@@ -157,10 +198,41 @@ app.post("/sign-in", async (req, res) => {
         });
       });
     });
+
   } catch (err) {
     console.error("Error processing sign-in:", err);
     return res.status(500).json({ success: false, message: "Internal server error." });
   }
+});
+
+// New route to check authentication status
+app.get("/check-auth", (req, res) => {
+  if (req.session.user) {
+    res.json({ 
+      isAuthenticated: true, 
+      user: req.session.user 
+    });
+  } else {
+    res.json({ 
+      isAuthenticated: false 
+    });
+  }
+});
+
+// New logout route
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: "Error logging out" });
+    }
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.json({ success: true, message: "Logged out successfully" });
+  });
+});
+
+// Protect routes that require authentication
+app.get("/protected-route", isAuthenticated, (req, res) => {
+  res.json({ success: true, data: "Protected data" });
 });
 
 // Save feedback responses
@@ -431,6 +503,21 @@ app.delete("/api/delete-medical-staff/:staffID", (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: "Medical staff deleted successfully." });
+  });
+});
+
+//Book appointment
+app.post('/api/book-appointment', (req, res) => {
+  const { donorID, eventID, staffID, startTime, endTime } = req.body;
+  const sql = 'INSERT INTO appointment (donorID, eventID, staffID, startTime, endTime) VALUES (?, ?, ?, ?, ?)';
+
+  db.query(sql, [donorID, eventID, staffID, startTime, endTime], (err, results) => {
+    if (err) {
+      console.error('Error creating appointment:', err);
+      res.status(500).send('Error creating appointment');
+      return;
+    }
+    res.status(201).send('Appointment created successfully');
   });
 });
 

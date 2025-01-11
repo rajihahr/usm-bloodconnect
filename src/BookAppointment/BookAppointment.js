@@ -4,42 +4,67 @@ import styles from './BookAppointment.module.css';
 import DoctorCard from './DoctorCard';
 import ConfirmationModal from './ConfirmationModal';
 
-const doctors = [
-  { name: 'Dr. Syaza Sufia Binti Roselan' },
-  { name: 'Dr. Najwa Batrisyia Binti Mohamad' },
-  { name: 'Dr. Maisarah Qistina Binti Meor Sha\'azizi' },
-  { name: 'Dr. Rajihah Binti Rosydi' },
-  { name: 'Dr. Anis Farihah Binti Mohd Fuad' },
-  { name: 'Dr. Marsya Diyana Binti Meor Sha\'azizi' }
-];
-
-function BookAppointment() {
+function BookAppointment({ user }) {
   const location = useLocation();
   const { eventID } = location.state || {};  // Get eventId from location state
-  const { donorID } = location.state || {};
+  const donorID = user?.id;
   console.log("Event ID from questionnaire:", eventID);
-  console.log("Donor ID from questionnaire:", donorID);
+  console.log("Donor ID from session:", donorID);
 
   const [event, setEvent] = useState(null);
+  const [medicalStaff, setMedicalStaff] = useState([]); // Store medical staff data
+  const [timeSlots, setTimeSlots] = useState([]); // Store time slots
   const [selectedDoctor, setSelectedDoctor] = useState(null); // Track selected doctor
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Track selected time slot
   const [timeslotSelected, setTimeslotSelected] = useState(false); // Track if any time slot is selected
   const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
 
   const handleTimeslotSelection = (doctorName, timeslot) => {
     if (timeslot) {
       setSelectedDoctor(doctorName);
+      setSelectedTimeSlot(timeslot);
       setTimeslotSelected(true);
     } else {
       setSelectedDoctor(null);
+      setSelectedTimeSlot(null);
       setTimeslotSelected(false);
     }
   };
 
-  const handleConfirmBooking = () => {
-    if (timeslotSelected) {
-      setIsModalOpen(true); // Open modal on confirm
+const handleConfirmBooking = async () => {
+  if (timeslotSelected) {
+    try {
+      const selectedStaff = medicalStaff.find(staff => staff.staffName === selectedDoctor);
+      // Split the selectedTimeSlot to get start and end times
+      const [startTime, endTime] = selectedTimeSlot.split(' - ');
+      
+      // Send the data to the backend
+      const response = await fetch('http://localhost:8081/api/book-appointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          donorID: donorID,
+          eventID: eventID,
+          staffID: selectedStaff.staffID,
+          startTime: startTime.trim(), // Use formatted time
+          endTime: endTime.trim() // Use formatted time
+        })
+      });
+
+      if (response.ok) {
+        console.log('Appointment created successfully');
+        setIsModalOpen(true); // Open modal on confirm
+      } else {
+        console.error('Error creating appointment');
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
     }
-  };
+  }
+};
+
 
   const closeModal = () => {
     setIsModalOpen(false); // Close modal
@@ -66,11 +91,22 @@ function BookAppointment() {
         const response = await fetch(`http://localhost:8081/eventAppointment/${eventID}`); // Use backticks for string interpolation
         const data = await response.json();
 
-        console.log("Fetched event data:", data); 
-
         console.log("Fetched event data:", data); // Log the fetched data
         if (data.event) {
           setEvent(data.event); // Set the specific event directly
+          
+          // Generate time slots
+          const startTime = new Date(`1970-01-01T${data.event.startTime}`);
+          const endTime = new Date(`1970-01-01T${data.event.endTime}`);
+          const slots = [];
+
+          while (startTime < endTime) {
+            const slotEnd = new Date(startTime.getTime() + 30 * 60000);
+            slots.push(`${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+            startTime.setTime(startTime.getTime() + 30 * 60000);
+          }
+
+          setTimeSlots(slots);
         } else {
           console.error("Event not found.");
         }
@@ -81,6 +117,22 @@ function BookAppointment() {
 
     fetchEvent();
   }, [eventID]);
+
+  // Fetch medical staff data
+  useEffect(() => {
+    const fetchMedicalStaff = async () => {
+      try {
+        const response = await fetch('http://localhost:8081/api/admin-medical-staff'); // Adjust the URL to your backend endpoint
+        const data = await response.json();
+
+        setMedicalStaff(data); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching medical staff:", error);
+      }
+    };
+
+    fetchMedicalStaff();
+  }, []);
 
   return (
     <div className={styles.bookAppointment}>
@@ -104,11 +156,12 @@ function BookAppointment() {
           )}
         </section>
         <div className={styles.doctorGrid}>
-          {doctors.map((doctor, index) => (
+          {medicalStaff.map((staff, index) => (
             <DoctorCard 
               key={index} 
-              name={doctor.name} 
-              isDisabled={timeslotSelected && selectedDoctor !== doctor.name}
+              name={staff.staffName} 
+              timeSlots={timeSlots} // Pass the dynamic time slots to DoctorCard
+              isDisabled={timeslotSelected && selectedDoctor !== staff.staffName}
               onTimeslotSelect={handleTimeslotSelection}
             />
           ))}
