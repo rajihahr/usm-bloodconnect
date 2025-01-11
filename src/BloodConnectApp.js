@@ -28,6 +28,7 @@ import AppointmentHistory from './Appointment/AppointmentHistory';
 import { AppointmentList } from './Admin/AdminAppointment/AppointmentList';
 import { AppointmentListMedicalStaff} from './Admin/AdminAppointment/AppointmentListMedicalStaff';
 import MedicalStaffAppDetails from './Admin/AdminAppointment/MedicalStaffAppDetails';
+import ScrollToTop from './ScrollToTop.js';
 
 const BloodConnectApp = () => {
   const [user, setUser] = useState(null);
@@ -92,6 +93,7 @@ const BloodConnectApp = () => {
     <div className={styles.app}>
       <Header user={user} onSignOut={handleSignOut} />
       <main className={styles.main}>
+      <ScrollToTop />
         <Routes>
           <Route path="/" element={<Hero user={user} />} />
           <Route path="/sign-in" element={<SignIn onSignIn={handleSignIn} />} />

@@ -7,12 +7,12 @@ const Footer = ({ user }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { donorID } = location.state || {};  
+  const donorID = user?.id;
   console.log("Donor ID from location:", donorID);
 
   const handleFeedback = () => {
     if (user?.role === 'donor') {
-      const donorIdToPass = donorID || user.id; // Ensure donorID is always passed
+      const donorIdToPass = donorID || user.id;
       console.log("Passing Donor ID:", donorIdToPass);
       navigate('/feedback', { state: { donorID: donorIdToPass } });
     }
