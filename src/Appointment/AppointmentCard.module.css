@@ -70,9 +70,9 @@
 
   .actionCancel {
     flex: 1;
-    background-color: #ffffff;
-    color: #4B7D8C;
-    border: 1px solid #4B7D8C;
+    background-color: #ae0d05;
+    color: #ffffff;
+    border: 1px solid #ae0d05;
     border-radius: 4px;
     padding: 11px 0;
     font-family: Montserrat, sans-serif;

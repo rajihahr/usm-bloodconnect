@@ -1,74 +1,36 @@
-import React from 'react';
-import styles from './AppointmentView.module.css'; // use css same as AppointmentView
+import React, { useState, useEffect } from 'react';
 import AppointmentCardHistory from './AppointmentCardHistory';
 import ButtonGroup from './ButtonGroup';
+import styles from './AppointmentView.module.css';
 
-const appointmentData = [
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },  
-];
+function AppointmentHistory({ user }) {
+  const [appointments, setAppointments] = useState([]);
+  const donorID = user?.id;
 
-function AppointmentHistory() {
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8081/api/appointments/${donorID}`);
+        const data = await response.json();
+        console.log("Fetched appointment data:", data);
+        const filteredAppointments = data.filter(appointment => appointment.status === 'Completed');
+        setAppointments(filteredAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    if (donorID) {
+      fetchAppointments();
+    }
+  }, [donorID]);
+
   return (
     <div className={styles.appointmentViewContainer}>
       <main className={styles.mainContent}>
         <ButtonGroup />
         <section className={styles.appointmentGrid}>
-          {appointmentData.map((appointment, index) => (
+          {appointments.map((appointment, index) => (
             <AppointmentCardHistory key={index} {...appointment} />
           ))}
         </section>

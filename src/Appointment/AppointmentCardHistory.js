@@ -24,7 +24,7 @@ function AppointmentCardHistory({ title, location, date, doctor, time }) {
         </div>
       </div>
       <div className={styles.actions}>
-        <button className={styles.actionButton} disabled>Cancel</button>
+        <button className={styles.actionButton} disabled>Delete</button>
         <button className={styles.actionButton} disabled>Update</button>
       </div>
     </article>

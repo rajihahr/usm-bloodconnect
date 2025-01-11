@@ -1,71 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppointmentCard from './AppointmentCard';
 import ButtonGroup from './ButtonGroup';
 import CancellationPopup from './CancellationPopup';
 import styles from './AppointmentView.module.css';
 
-const appointmentData = [
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },
-  {
-    title: "Jom Derma Darah 2024",
-    location: "Dewan Utama Pelajar, USM",
-    date: "25th December 2024",
-    doctor: "Dr. Syaza Sufia",
-    time: "8.00 AM - 5.00 PM"
-  },  
-];
-
-function AppointmentView() {
+function AppointmentView({ user }) {
+  const [appointments, setAppointments] = useState([]);
   const [showCancellationPopup, setShowCancellationPopup] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const donorID = user?.id;
+  console.log("Donor ID from session:", donorID);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8081/api/appointments/${donorID}`);
+        const data = await response.json();
+        console.log("Fetched appointment data:", data);
+        const filteredAppointments = data.filter(appointment => appointment.status === 'No Show');
+        setAppointments(filteredAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    if (donorID) {
+      fetchAppointments();
+    }
+  }, [donorID]);
 
   const handleCancelClick = (appointment) => {
     setSelectedAppointment(appointment);
@@ -77,11 +39,11 @@ function AppointmentView() {
       <main className={styles.mainContent}>
         <ButtonGroup />
         <section className={styles.appointmentGrid}>
-          {appointmentData.map((appointment, index) => (
+          {appointments.map((appointment, index) => (
             <AppointmentCard
-            key={index}
-            {...appointment}
-            onCancel={() => handleCancelClick(appointment)} // Passing down the cancel handler
+              key={index}
+              {...appointment}
+              onCancel={() => handleCancelClick(appointment)} // Passing down the cancel handler
             />
           ))}
         </section>

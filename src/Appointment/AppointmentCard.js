@@ -41,7 +41,7 @@ function AppointmentCard({ title, location, date, doctor, time, onCancel }) {
         </div>
       </div>
       <div className={styles.actions}>
-        <button className={styles.actionCancel} onClick={onCancel}>Cancel</button> {/* Triggering the cancel event */}
+        <button className={styles.actionCancel} onClick={onCancel}>Delete</button>
         <Link to="/book-appointment">
           <button className={styles.actionUpdate}>Update</button>
         </Link>

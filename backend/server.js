@@ -80,6 +80,41 @@ app.get("/eventAppointment/:eventID", (req, res) => {
   });
 });
 
+app.get('/api/appointments/:donorID', (req, res) => {
+  const donorID = req.params.donorID;
+  const sql = `
+    SELECT 
+      event.eventName AS title, 
+      event.eventLocation AS location, 
+      DATE_FORMAT(event.eventDate, '%D %M %Y') AS date, 
+      medicalStaff.staffName AS doctor, 
+      TIME_FORMAT(appointment.startTime, '%H:%i') AS startTime,
+      TIME_FORMAT(appointment.endTime, '%H:%i') AS endTime, 
+      appointment.status 
+    FROM appointment 
+    JOIN event ON appointment.eventID = event.eventID 
+    JOIN medicalStaff ON appointment.staffID = medicalStaff.staffID 
+    WHERE appointment.donorID = ?
+  `;
+
+  db.query(sql, [donorID], (err, results) => {
+    if (err) {
+      console.error('Error fetching appointments:', err);
+      res.status(500).send('Error fetching appointments');
+      return;
+    }
+    
+    // Format the time to be in range (e.g., 8:00 - 8:30)
+    const formattedResults = results.map(appointment => ({
+      ...appointment,
+      time: `${appointment.startTime} - ${appointment.endTime}`
+    }));
+    
+    res.json(formattedResults);
+  });
+});
+
+
 // Sign up with password hashing
 app.post("/sign-up", (req, res) => {
   const { donorName, donorEmail, donorPassword, donorDOB } = req.body;

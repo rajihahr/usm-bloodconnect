@@ -110,8 +110,10 @@ const BloodConnectApp = () => {
             user ? <BookAppointment user={user} /> : <Navigate to="/sign-in" />}/>
           <Route path="/confirmation-modal" element={
             user ? <ConfirmationModal user={user} /> : <Navigate to="/sign-in" />}/>
-          <Route path="/appointment-view" element={<AppointmentView />} />
-          <Route path="/appointment-history" element={<AppointmentHistory />} />
+          <Route path="/appointment-view" element={
+            user ? <AppointmentView user={user} /> : <Navigate to="/sign-in" />}/>
+          <Route path="/appointment-history" element={
+            user ? <AppointmentHistory user={user} /> : <Navigate to="/sign-in" />}/>
           <Route path="/admin-home" element={user?.role === 'admin' ? <AdminDashboard user={user} /> : <Navigate to="/" />}/>
           <Route path="/admin-feedback" element={<FeedbackPageAdmin />}/>
           <Route path="/admin-event" element={<EventsPage />}/>
