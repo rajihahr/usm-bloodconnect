@@ -13,7 +13,7 @@ function ConfirmationModal() {
         />
         <h3 className={styles.popupTitle}>Appointment Confirmed!</h3>
         <p className={styles.popupMessage}>
-        A confirmation email has been sent to your inbox.
+        Your appointment has been successfully scheduled. Please be sure to attend at the specified time and date.
         </p>
         <Link to='/appointment-view'>
         <button className={styles.closeButton}>
