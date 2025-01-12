@@ -82,12 +82,14 @@ const BloodConnectApp = () => {
       
       if (data.success) {
         setUser(null);
-        navigate('/');
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       }
     } catch (error) {
       console.error('Error logging out:', error);
     }
-  };
+  };  
 
   return (
     <div className={styles.app}>
