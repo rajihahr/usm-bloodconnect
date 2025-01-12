@@ -29,9 +29,32 @@ function AppointmentView({ user }) {
     }
   }, [donorID]);
 
-  const handleCancelClick = (appointment) => {
+  const handleCancelClick = (appointmentID) => {
+    const appointment = appointments.find(a => a.appointmentID === appointmentID);
     setSelectedAppointment(appointment);
     setShowCancellationPopup(true);
+  };
+
+  const handleConfirmCancellation = async (appointment) => {
+    try {
+      const response = await fetch(`http://localhost:8081/api/appointments/${appointment.appointmentID}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        console.log('Appointment deleted successfully');
+        setAppointments(appointments.filter(a => a.appointmentID !== appointment.appointmentID));
+      } else {
+        console.error('Error deleting appointment');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    } finally {
+      setShowCancellationPopup(false);
+    }
   };
 
   return (
@@ -43,7 +66,7 @@ function AppointmentView({ user }) {
             <AppointmentCard
               key={index}
               {...appointment}
-              onCancel={() => handleCancelClick(appointment)} // Passing down the cancel handler
+              onCancel={() => handleCancelClick(appointment.appointmentID)} // Passing down the cancel handler
             />
           ))}
         </section>
@@ -52,10 +75,7 @@ function AppointmentView({ user }) {
       {showCancellationPopup && (
         <CancellationPopup
           onClose={() => setShowCancellationPopup(false)}
-          onConfirm={() => {
-            // Handle confirmation logic (like actually canceling the appointment)
-            setShowCancellationPopup(false);
-          }}
+          onConfirm={handleConfirmCancellation}
           appointment={selectedAppointment} // Pass the selected appointment to the popup if needed
         />
       )}

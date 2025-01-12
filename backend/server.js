@@ -241,6 +241,7 @@ app.get('/api/appointments/:donorID', (req, res) => {
   const donorID = req.params.donorID;
   const sql = `
     SELECT 
+      appointment.appointmentID,
       event.eventName AS title, 
       event.eventLocation AS location, 
       DATE_FORMAT(event.eventDate, '%D %M %Y') AS date, 
@@ -260,7 +261,7 @@ app.get('/api/appointments/:donorID', (req, res) => {
       res.status(500).send('Error fetching appointments');
       return;
     }
-    
+
     const formattedResults = results.map(appointment => ({
       ...appointment,
       time: `${appointment.startTime} - ${appointment.endTime}`
@@ -284,6 +285,22 @@ app.post('/api/book-appointment', (req, res) => {
     res.status(201).send('Appointment created successfully');
   });
 });
+
+// Delete an appointment
+app.delete('/api/appointments/:appointmentID', (req, res) => {
+  const appointmentID = req.params.appointmentID;
+  const sql = 'DELETE FROM appointment WHERE appointmentID = ?';
+
+  db.query(sql, [appointmentID], (err, results) => {
+    if (err) {
+      console.error('Error deleting appointment:', err);
+      res.status(500).send('Error deleting appointment');
+      return;
+    }
+    res.status(200).send('Appointment deleted successfully');
+  });
+});
+
 
 // Save feedback responses
 app.post("/feedback", (req, res) => {

@@ -1,12 +1,11 @@
 import React from 'react';
 import styles from './CancellationPopup.module.css';
-import { Link } from 'react-router-dom';
 
-function CancellationPopup({ onClose }) {
+function CancellationPopup({ onClose, onConfirm, appointment }) {
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popupContent}>
-      <img
+        <img
           src="/Cancel.png"
           className={styles.successIcon}
           alt="Success checkmark"
@@ -16,14 +15,15 @@ function CancellationPopup({ onClose }) {
           Are you sure you want to cancel the appointment? This action cannot be undone.
         </p>
         <div className={styles.buttonContainer}>
-        <Link to="/appointment-view" onClick={onClose}>
-          <button className={styles.closeButton}>
+          <button className={styles.closeButton} onClick={onClose}>
             Close
-          </button></Link>
-          <Link to="/appointment-view" onClick={onClose}>
-          <button className={styles.bookButton}>
+          </button>
+          <button
+            className={styles.bookButton}
+            onClick={() => onConfirm(appointment)}
+          >
             Confirm
-          </button></Link>
+          </button>
         </div>
       </div>
     </div>
@@ -31,4 +31,3 @@ function CancellationPopup({ onClose }) {
 }
 
 export default CancellationPopup;
-
