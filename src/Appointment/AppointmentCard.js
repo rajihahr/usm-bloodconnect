@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AppointmentCard.module.css';
 
-function AppointmentCard({ appointmentID, title, location, date, doctor, time, onCancel }) {
+function AppointmentCard({ appointmentID, eventID, title, location, date, doctor, time, onCancel }) {
   return (
     <article className={styles.appointmentCard}>
       <h2 className={styles.title}>{title}</h2>
@@ -42,7 +42,7 @@ function AppointmentCard({ appointmentID, title, location, date, doctor, time, o
       </div>
       <div className={styles.actions}>
         <button className={styles.actionCancel} onClick={() => onCancel(appointmentID)}>Delete</button>
-        <Link to="/book-appointment">
+        <Link to="/book-appointment" state={{ eventID, appointmentID }}>
           <button className={styles.actionUpdate}>Update</button>
         </Link>
       </div>

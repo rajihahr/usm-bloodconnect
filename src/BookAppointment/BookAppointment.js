@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from './BookAppointment.module.css';
 import DoctorCard from './DoctorCard';
 import ConfirmationModal from './ConfirmationModal';
 
 function BookAppointment({ user }) {
   const location = useLocation();
-  const { eventID } = location.state || {};  // Get eventId from location state
+  const navigate = useNavigate();
+  const { eventID, appointmentID } = location.state || {};
   const donorID = user?.id;
-  console.log("Event ID from questionnaire:", eventID);
+  console.log("Event ID from state:", eventID);
+  console.log("Appointment ID from state:", appointmentID);
   console.log("Donor ID from session:", donorID);
 
   const [event, setEvent] = useState(null);
@@ -31,43 +33,49 @@ function BookAppointment({ user }) {
     }
   };
 
-const handleConfirmBooking = async () => {
-  if (timeslotSelected) {
-    try {
-      const selectedStaff = medicalStaff.find(staff => staff.staffName === selectedDoctor);
-      // Split the selectedTimeSlot to get start and end times
-      const [startTime, endTime] = selectedTimeSlot.split(' - ');
-      
-      // Send the data to the backend
-      const response = await fetch('http://localhost:8081/api/book-appointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          donorID: donorID,
-          eventID: eventID,
-          staffID: selectedStaff.staffID,
-          startTime: startTime.trim(), // Use formatted time
-          endTime: endTime.trim() // Use formatted time
-        })
-      });
+  const handleConfirmBooking = async () => {
+    if (timeslotSelected) {
+      try {
+        const selectedStaff = medicalStaff.find(staff => staff.staffName === selectedDoctor);
+        // Split the selectedTimeSlot to get start and end times
+        const [startTime, endTime] = selectedTimeSlot.split(' - ');
 
-      if (response.ok) {
-        console.log('Appointment created successfully');
-        setIsModalOpen(true); // Open modal on confirm
-      } else {
-        console.error('Error creating appointment');
+        // Determine if it's a new booking or an update
+        const url = appointmentID 
+          ? `http://localhost:8081/api/appointments/${appointmentID}` 
+          : 'http://localhost:8081/api/book-appointment';
+        const method = appointmentID ? 'PUT' : 'POST';
+
+        // Send the data to the backend
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            donorID: donorID,
+            eventID: eventID,
+            staffID: selectedStaff.staffID,
+            startTime: startTime.trim(), // Use formatted time
+            endTime: endTime.trim() // Use formatted time
+          })
+        });
+
+        if (response.ok) {
+          console.log(appointmentID ? 'Appointment updated successfully' : 'Appointment created successfully');
+          setIsModalOpen(true); // Open modal on confirm
+        } else {
+          console.error('Error creating/updating appointment');
+        }
+      } catch (error) {
+        console.error('Error creating/updating appointment:', error);
       }
-    } catch (error) {
-      console.error('Error creating appointment:', error);
     }
-  }
-};
-
+  };
 
   const closeModal = () => {
     setIsModalOpen(false); // Close modal
+    navigate('/appointment-view'); // Redirect to appointment view after confirmation
   };
 
   // Function format date
@@ -115,7 +123,9 @@ const handleConfirmBooking = async () => {
       }
     };
 
-    fetchEvent();
+    if (eventID) {
+      fetchEvent();
+    }
   }, [eventID]);
 
   // Fetch medical staff data
@@ -125,7 +135,7 @@ const handleConfirmBooking = async () => {
         const response = await fetch('http://localhost:8081/api/admin-medical-staff'); // Adjust the URL to your backend endpoint
         const data = await response.json();
 
-        setMedicalStaff(data); // Update state with fetched data
+        setMedicalStaff(data);
       } catch (error) {
         console.error("Error fetching medical staff:", error);
       }

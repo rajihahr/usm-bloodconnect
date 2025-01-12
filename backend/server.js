@@ -241,6 +241,7 @@ app.get('/api/appointments/:donorID', (req, res) => {
   const donorID = req.params.donorID;
   const sql = `
     SELECT 
+      event.eventID,
       appointment.appointmentID,
       event.eventName AS title, 
       event.eventLocation AS location, 
@@ -301,6 +302,21 @@ app.delete('/api/appointments/:appointmentID', (req, res) => {
   });
 });
 
+// Update an appointment
+app.put('/api/appointments/:appointmentID', (req, res) => {
+  const appointmentID = req.params.appointmentID;
+  const { staffID, startTime, endTime } = req.body;
+  const sql = 'UPDATE appointment SET staffID = ?, startTime = ?, endTime = ? WHERE appointmentID = ?';
+
+  db.query(sql, [staffID, startTime, endTime, appointmentID], (err, results) => {
+    if (err) {
+      console.error('Error updating appointment:', err);
+      res.status(500).send('Error updating appointment');
+      return;
+    }
+    res.status(200).send('Appointment updated successfully');
+  });
+});
 
 // Save feedback responses
 app.post("/feedback", (req, res) => {
