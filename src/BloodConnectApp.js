@@ -73,7 +73,7 @@ const BloodConnectApp = () => {
 
   const handleSignOut = async () => {
     try {
-      const response = await fetch('http://localhost:8081/logout', {
+      const response = await fetch('http://localhost:8081/sign-out', {
         method: 'POST',
         credentials: 'include'
       });

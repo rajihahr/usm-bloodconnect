@@ -20,7 +20,7 @@ const Footer = ({ user }) => {
     {
       links: [
         { name: "Home", path: "/" },
-        { name: "About Us", path: "/about" },
+        { name: "About Us", path: "/about-us" },
         { name: "FAQs", path: "/faqs" },
       ],
     },

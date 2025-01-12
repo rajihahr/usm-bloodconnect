@@ -1,11 +1,12 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const bodyParser = require("body-parser");
 const cors = require("cors");
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
 const db = require("./db");
 
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const app = express();
 
@@ -16,21 +17,22 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-  secret: 'your-secret-key',  // Change this to a secure secret
+  secret: '4eba08474238b7a30245666cec4ab4b199199473a2fc9020b8d766cf2cf8731f',
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    maxAge: 60 * 60 * 1000 // 24 hours
+    maxAge: 60 * 60 * 1000 // 1 hour
   }
 }));
 
 // Updated CORS configuration to allow credentials
 app.use(cors({
+  // origin: "https://bloodconnect.site",
   origin: "http://localhost:3000",
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
-  credentials: true // Important for sessions to work with CORS
+  credentials: true
 }));
 
 // Middleware to check if user is authenticated
@@ -41,79 +43,6 @@ const isAuthenticated = (req, res, next) => {
     res.status(401).json({ success: false, message: "Not authenticated" });
   }
 };
-
-// Display Event on HomePage
-app.get("/", (req, res) => { 
-  const query = "SELECT * FROM event WHERE eventID = 2 "; // Adjust the table name if necessary
-  
-  db.query(query, (err, eventdata) => {
-    if (err) {
-      console.error("Error querying events:", err);
-      return res.status(500).json({ error: true, message: "Error querying events." });
-    }
-
-    if (eventdata.length === 0) {
-      return res.json({ events: [], message: "No events found." });
-    }
-
-    res.json({ event: eventdata[0] });
-  });
-});
-
-// Display Event Details in Appointment Page
-app.get("/eventAppointment/:eventID", (req, res) => {
-  const eventID = req.params.eventID; // Get eventID from the URL parameter
-  
-  const query = "SELECT * FROM event WHERE eventID = ?"; // Query to fetch the event from the database
-  
-  db.query(query, [eventID], (err, eventdata) => {
-    if (err) {
-      console.error("Error querying events:", err);
-      return res.status(500).json({ error: true, message: "Error querying events." });
-    }
-
-    if (eventdata.length === 0) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-
-    res.json({ event: eventdata[0] });
-  });
-});
-
-app.get('/api/appointments/:donorID', (req, res) => {
-  const donorID = req.params.donorID;
-  const sql = `
-    SELECT 
-      event.eventName AS title, 
-      event.eventLocation AS location, 
-      DATE_FORMAT(event.eventDate, '%D %M %Y') AS date, 
-      medicalStaff.staffName AS doctor, 
-      TIME_FORMAT(appointment.startTime, '%H:%i') AS startTime,
-      TIME_FORMAT(appointment.endTime, '%H:%i') AS endTime, 
-      appointment.status 
-    FROM appointment 
-    JOIN event ON appointment.eventID = event.eventID 
-    JOIN medicalStaff ON appointment.staffID = medicalStaff.staffID 
-    WHERE appointment.donorID = ?
-  `;
-
-  db.query(sql, [donorID], (err, results) => {
-    if (err) {
-      console.error('Error fetching appointments:', err);
-      res.status(500).send('Error fetching appointments');
-      return;
-    }
-    
-    // Format the time to be in range (e.g., 8:00 - 8:30)
-    const formattedResults = results.map(appointment => ({
-      ...appointment,
-      time: `${appointment.startTime} - ${appointment.endTime}`
-    }));
-    
-    res.json(formattedResults);
-  });
-});
-
 
 // Sign up with password hashing
 app.post("/sign-up", (req, res) => {
@@ -155,12 +84,11 @@ app.post("/sign-up", (req, res) => {
   });
 });
 
-// Updated sign-in route with session management
+// Sign in with session management
 app.post("/sign-in", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Query donor table
     const donorQuery = "SELECT donorID AS id, donorName AS name, donorEmail AS email, donorPassword AS password, 'donor' AS role FROM donor WHERE donorEmail = ?";
     db.query(donorQuery, [email], async (donorErr, donorData) => {
       if (donorErr) {
@@ -182,7 +110,7 @@ app.post("/sign-in", async (req, res) => {
         }
       }
 
-      // Query medicalStaff table
+      // medicalStaff table
       const medicalStaffQuery = "SELECT staffID AS id, staffName AS name, staffEmail AS email, staffPassword AS password, 'medical-staff' AS role FROM medicalStaff WHERE staffEmail = ?";
       db.query(medicalStaffQuery, [email], async (staffErr, staffData) => {
         if (staffErr) {
@@ -191,7 +119,6 @@ app.post("/sign-in", async (req, res) => {
         if (staffData.length > 0) {
           const staff = staffData[0];
           if (password === staff.password) {
-            // Set session data
             req.session.user = {
               id: staff.id,
               name: staff.name,
@@ -202,7 +129,7 @@ app.post("/sign-in", async (req, res) => {
           }
         }
 
-        // Query admin table
+        // admin table
         const adminQuery = "SELECT adminID AS id, adminName AS name, adminEmail AS email, adminPassword AS password, 'admin' AS role FROM admin WHERE adminEmail = ?";
         db.query(adminQuery, [email], async (adminErr, adminData) => {
           if (adminErr) {
@@ -213,7 +140,6 @@ app.post("/sign-in", async (req, res) => {
             const admin = adminData[0];
             const isMatch = await bcrypt.compare(password, admin.password);
             if (isMatch) {
-              // Set session data
               req.session.user = {
                 id: admin.id,
                 name: admin.name,
@@ -254,13 +180,13 @@ app.get("/check-auth", (req, res) => {
   }
 });
 
-// New logout route
-app.post("/logout", (req, res) => {
+// Sign out
+app.post("/sign-out", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ success: false, message: "Error logging out" });
     }
-    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.clearCookie('connect.sid');
     res.json({ success: true, message: "Logged out successfully" });
   });
 });
@@ -268,6 +194,95 @@ app.post("/logout", (req, res) => {
 // Protect routes that require authentication
 app.get("/protected-route", isAuthenticated, (req, res) => {
   res.json({ success: true, data: "Protected data" });
+});
+
+// ------------------------------------- DONOR SIDE -------------------------------------
+
+// Display Event on HomePage
+app.get("/", (req, res) => { 
+  const query = "SELECT * FROM event WHERE eventID = 2 ";
+  
+  db.query(query, (err, eventdata) => {
+    if (err) {
+      console.error("Error querying events:", err);
+      return res.status(500).json({ error: true, message: "Error querying events." });
+    }
+
+    if (eventdata.length === 0) {
+      return res.json({ events: [], message: "No events found." });
+    }
+
+    res.json({ event: eventdata[0] });
+  });
+});
+
+// Display event details in 'BookAppointment'
+app.get("/eventAppointment/:eventID", (req, res) => {
+  const eventID = req.params.eventID; // Get eventID from the URL parameter
+  
+  const query = "SELECT * FROM event WHERE eventID = ?";
+  
+  db.query(query, [eventID], (err, eventdata) => {
+    if (err) {
+      console.error("Error querying events:", err);
+      return res.status(500).json({ error: true, message: "Error querying events." });
+    }
+
+    if (eventdata.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.json({ event: eventdata[0] });
+  });
+});
+
+// Display appointment details in 'AppointmentView' and 'AppointmentHistory'
+app.get('/api/appointments/:donorID', (req, res) => {
+  const donorID = req.params.donorID;
+  const sql = `
+    SELECT 
+      event.eventName AS title, 
+      event.eventLocation AS location, 
+      DATE_FORMAT(event.eventDate, '%D %M %Y') AS date, 
+      medicalStaff.staffName AS doctor, 
+      TIME_FORMAT(appointment.startTime, '%H:%i') AS startTime,
+      TIME_FORMAT(appointment.endTime, '%H:%i') AS endTime, 
+      appointment.status 
+    FROM appointment 
+    JOIN event ON appointment.eventID = event.eventID 
+    JOIN medicalStaff ON appointment.staffID = medicalStaff.staffID 
+    WHERE appointment.donorID = ?
+  `;
+
+  db.query(sql, [donorID], (err, results) => {
+    if (err) {
+      console.error('Error fetching appointments:', err);
+      res.status(500).send('Error fetching appointments');
+      return;
+    }
+    
+    const formattedResults = results.map(appointment => ({
+      ...appointment,
+      time: `${appointment.startTime} - ${appointment.endTime}`
+    }));
+    
+    res.json(formattedResults);
+  });
+});
+
+// Book appointment
+app.post('/api/book-appointment', (req, res) => {
+  const { donorID, eventID, staffID, startTime, endTime } = req.body;
+  const sql = 'INSERT INTO appointment (donorID, eventID, staffID, startTime, endTime) VALUES (?, ?, ?, ?, ?)';
+
+  db.query(sql, [donorID, eventID, staffID, startTime, endTime], (err, results) => {
+    if (err) {
+      console.error('Error creating appointment:', err);
+      res.status(500).send('Error creating appointment');
+      return;
+    }
+    res.status(201).send('Appointment created successfully');
+  });
 });
 
 // Save feedback responses
@@ -286,35 +301,7 @@ app.post("/feedback", (req, res) => {
   });
 });
 
-// Fetch feedbacks
-app.get("/feedbacks", (req, res) =>
-  { const query = "SELECT * FROM feedback";
-    db.query(query, (err, results) =>
-      { if (err) {
-        console.error("Error fetching feedbacks:", err);
-        return res.status(500).json({ success: false, message: "Error fetching feedbacks from database." });
-      }
-      return res.status(200).json({ success: true, feedbacks: results });
-    });
-  });
-  
-  // Delete feedback
-  app.delete("/feedback/:id", (req, res) => {
-    const { id } = req.params;
-    const deleteFeedbackSql = "DELETE FROM feedback WHERE feedbackID = ?";
-    db.query(deleteFeedbackSql, [id], (err, result) => {
-      if (err) {
-        console.error("Error deleting feedback from database:", err);
-        return res.status(500).json({ success: false, message: "Error deleting feedback from database." });
-      } if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: "Feedback not found." });
-      }
-      return res.status(200).json({ success: true, message: "Feedback deleted successfully." });
-    });
-  });
-
-
-// Fetch questions
+// Fetch questions to display
 app.get("/questions", (req, res) => {
   const query = "SELECT * FROM question";
   db.query(query, (err, results) => {
@@ -358,6 +345,35 @@ app.post('/saveResponses', (req, res) => {
     });
 });
 
+// Fetch feedbacks
+app.get("/feedbacks", (req, res) =>
+  { const query = "SELECT * FROM feedback";
+    db.query(query, (err, results) =>
+      { if (err) {
+        console.error("Error fetching feedbacks:", err);
+        return res.status(500).json({ success: false, message: "Error fetching feedbacks from database." });
+      }
+      return res.status(200).json({ success: true, feedbacks: results });
+    });
+  });
+
+// ------------------------------------- ADMIN SIDE -------------------------------------
+  
+// Delete feedback
+app.delete("/feedback/:id", (req, res) => {
+  const { id } = req.params;
+  const deleteFeedbackSql = "DELETE FROM feedback WHERE feedbackID = ?";
+  db.query(deleteFeedbackSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting feedback from database:", err);
+      return res.status(500).json({ success: false, message: "Error deleting feedback from database." });
+    } if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Feedback not found." });
+    }
+    return res.status(200).json({ success: true, message: "Feedback deleted successfully." });
+  });
+});
+
 // Add New Event Details
 app.post("/admin-event", (req, res) => {
   const { eventName, eventDate, eventLocation, startTime, endTime, status } = req.body;
@@ -383,8 +399,8 @@ app.post("/admin-event", (req, res) => {
 
 // Retrieve Event Details to Display
 app.get("/admin-event", (req, res) => { 
-    const query = "SELECT * FROM event"; // Adjust the table name if necessary
-    
+    const query = "SELECT * FROM event";
+
     db.query(query, (err, eventdata) => {
       if (err) {
         console.error("Error querying events:", err);
@@ -445,7 +461,7 @@ app.delete("/admin-event/:id", (req, res) => {
   });
 });
 
-// Endpoint to get all medical staff
+// Fetch all medical staff
 app.get("/api/admin-medical-staff", (req, res) => {
   const sql = "SELECT * FROM medicalStaff";
   db.query(sql, (err, data) => {
@@ -459,7 +475,7 @@ app.get("/api/admin-medical-staff", (req, res) => {
   });
 });
 
-/// Endpoint to add medical staff
+// Add medical staff
 app.post("/api/add-medical-staff", (req, res) => {
   const { name, email, phone, password } = req.body;
 
@@ -499,7 +515,7 @@ app.post("/api/add-medical-staff", (req, res) => {
   });
 });
 
-//Update medical staff
+// Update medical staff
 app.put("/api/update-medical-staff", (req, res) => {
   const { staffID, staffName, staffEmail, staffPhoneNum, staffPassword } =
     req.body;
@@ -524,7 +540,7 @@ app.put("/api/update-medical-staff", (req, res) => {
   );
 });
 
-//Delete medical staff
+// Delete medical staff
 app.delete("/api/delete-medical-staff/:staffID", (req, res) => {
   const { staffID } = req.params;
   const sql = "DELETE FROM medicalStaff WHERE staffID = ?";
@@ -538,21 +554,6 @@ app.delete("/api/delete-medical-staff/:staffID", (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: "Medical staff deleted successfully." });
-  });
-});
-
-//Book appointment
-app.post('/api/book-appointment', (req, res) => {
-  const { donorID, eventID, staffID, startTime, endTime } = req.body;
-  const sql = 'INSERT INTO appointment (donorID, eventID, staffID, startTime, endTime) VALUES (?, ?, ?, ?, ?)';
-
-  db.query(sql, [donorID, eventID, staffID, startTime, endTime], (err, results) => {
-    if (err) {
-      console.error('Error creating appointment:', err);
-      res.status(500).send('Error creating appointment');
-      return;
-    }
-    res.status(201).send('Appointment created successfully');
   });
 });
 
