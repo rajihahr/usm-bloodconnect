@@ -2,10 +2,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AppointmentCardMS.module.css';
 
-function AppointmentCardMS({ title, location, date, doctor, time, onCancel }) {
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function formatTime(timeString) {
+  const [hours, minutes] = timeString.split(':');
+  const date = new Date();
+  date.setHours(hours, minutes);
+  return date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function AppointmentCardMS({ eventName, eventLocation, eventDate, startTime, endTime }) {
   return (
     <article className={styles.appointmentCard}>
-      <h2 className={styles.title}>{title}</h2>
+      <h2 className={styles.title}>{eventName}</h2>
       <div className={styles.details}>
         <div className={styles.detailItem}>
           <img
@@ -13,7 +32,7 @@ function AppointmentCardMS({ title, location, date, doctor, time, onCancel }) {
             alt=""
             className={styles.icon}
           />
-          <p>{location}</p>
+          <p>{eventLocation}</p>
         </div>
         <div className={styles.detailItem}>
           <img
@@ -21,15 +40,7 @@ function AppointmentCardMS({ title, location, date, doctor, time, onCancel }) {
             alt=""
             className={styles.icon}
           />
-          <p>{date}</p>
-        </div>
-        <div className={styles.detailItem}>
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/46774d379ae7b4dc6a4dffef30622124b7f14583f7d3dd8e2906d5a566b1439b?placeholderIfAbsent=true&apiKey=dc1dfaeed34d4c05a46eb3603635944e"
-            alt=""
-            className={styles.icon}
-          />
-          <p>{doctor}</p>
+          <p>{formatDate(eventDate)}</p>
         </div>
         <div className={styles.detailItem}>
           <img
@@ -37,7 +48,7 @@ function AppointmentCardMS({ title, location, date, doctor, time, onCancel }) {
             alt=""
             className={styles.icon}
           />
-          <p>{time}</p>
+          <p>{`${formatTime(startTime)} - ${formatTime(endTime)}`}</p>
         </div>
       </div>
       <div className={styles.actions}>
@@ -50,4 +61,3 @@ function AppointmentCardMS({ title, location, date, doctor, time, onCancel }) {
 }
 
 export default AppointmentCardMS;
-
