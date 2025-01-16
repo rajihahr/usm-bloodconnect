@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './AppointmentTable.module.css';
-import UpdateAppointment from './UpdateAppointment';
 import DeleteAppointment from './DeleteAppointment';
 
-const appointments = [
-  { id: 1, date: '25/12/2024', location: 'Dewan Utama Pelajar', time:'08:30 AM - 09:00 AM', name: 'John Doe', status: 'Ongoing' },
-  { id: 2, date: '25/12/2024', location: 'Dewan Utama Pelajar', time:'10:00 AM - 10:30 AM', name: 'John Doe 2', status: 'Completed' },
-  { id: 3, date: '25/12/2024', location: 'Dewan Utama Pelajar', time:'9:00 AM - 09:30 AM', name: 'Najwa Batrisyia', status: 'No Show' },
-];
-
 export default function AppointmentTable() {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
+  const location = useLocation();
+  const { staffID, eventID } = location.state; // Retrieve data from state
+  const [appointments, setAppointments] = useState([]);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false); // Track rejection modal visibility
   const [selectedAppointment, setSelectedAppointment] = useState(null); // Track selected appointment
 
-  const handleApproveClick = (appointment) => {
-    setSelectedAppointment(appointment); // Set the selected appointment
-    setIsModalOpen(true); // Open modal
-  };
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8081/api/appointments/${staffID}/${eventID}`);
+        const data = await response.json();
+        console.log('Fetched appointments:', data);
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchAppointments();
+  }, [staffID, eventID]);
 
   const handleRejectClick = (appointment) => {
     setSelectedAppointment(appointment); // Set the selected appointment
     setIsRejectModalOpen(true); // Open rejection modal
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false); // Close approval modal
-    setSelectedAppointment(null); // Reset selected appointment
   };
 
   const closeRejectModal = () => {
@@ -34,11 +35,26 @@ export default function AppointmentTable() {
     setSelectedAppointment(null); // Reset selected appointment
   };
 
+  const handleDeleteAppointment = async (appointmentID) => {
+    try {
+      const response = await fetch(`http://localhost:8081/api/appointments/${appointmentID}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setAppointments(appointments.filter(appointment => appointment.appointmentID !== appointmentID));
+        closeRejectModal();
+      } else {
+        console.error('Error deleting appointment:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    }
+  };
 
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table}>
-        {/* Table Header */}
         <thead className={styles.tableHeader}>
           <tr>
             <th className={styles.headerCell}>No.</th>
@@ -48,22 +64,18 @@ export default function AppointmentTable() {
             <th className={styles.headerCell}>Donor Name</th>
             <th className={styles.headerCell}>Status</th>
             <th className={styles.headerCell}></th>
-            <th className={styles.headerCell}></th>
           </tr>
         </thead>
-
-        {/* Table Body */}
         <tbody>
-          {appointments
-            .map((appointment, index) => (
-              <tr key={appointment.id} className={styles.tableRow}>
-                <td className={styles.tableCell}>{index + 1}</td> {/* Dynamically display row number */}
-                <td className={styles.tableCell}>{appointment.date}</td>
-                <td className={styles.tableCell}>{appointment.location}</td>
-                <td className={styles.tableCell}>{appointment.time}</td>
-                <td className={styles.tableCell}>{appointment.name || '-'}</td>
-                <td className={styles.tableCell}>{appointment.status}</td>
-                <td className={styles.tableCell}>
+          {appointments.map((appointment, index) => (
+            <tr key={appointment.appointmentID} className={styles.tableRow}>
+              <td className={styles.tableCell}>{index + 1}</td>
+              <td className={styles.tableCell}>{new Date(appointment.eventDate).toLocaleDateString()}</td>
+              <td className={styles.tableCell}>{appointment.eventLocation}</td>
+              <td className={styles.tableCell}>{`${appointment.startTime} - ${appointment.endTime}`}</td>
+              <td className={styles.tableCell}>{appointment.donorName || '-'}</td>
+              <td className={styles.tableCell}>{appointment.status}</td>
+              <td className={styles.tableCell}>
                 <img
                   src="DeleteRow.png"
                   alt="Delete appointment"
@@ -71,24 +83,17 @@ export default function AppointmentTable() {
                   onClick={() => handleRejectClick(appointment)}
                 />
               </td>
-              <td className={styles.tableCell}>
-                <img
-                  src="UpdateRow.png"
-                  alt="Edit appointment"
-                  className={styles.actionIcon}
-                  onClick={() => handleApproveClick(appointment)}
-                />
-              </td>
-              </tr>
-            ))}
+            </tr>
+          ))}
         </tbody>
       </table>
-
-      {/* Render the modal only when isModalOpen is true */}
-      {isModalOpen && <UpdateAppointment onClose={closeModal} appointment={selectedAppointment} />}
-      {/* Render the rejection modal */}
-      {isRejectModalOpen && (<DeleteAppointment onClose={closeRejectModal} appointment={selectedAppointment} />)} 
-
+      {isRejectModalOpen && (
+        <DeleteAppointment
+          onClose={closeRejectModal}
+          appointment={selectedAppointment}
+          onDelete={handleDeleteAppointment}
+        />
+      )}
     </div>
   );
 }

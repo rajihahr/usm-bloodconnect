@@ -597,6 +597,32 @@ app.delete("/api/delete-medical-staff/:staffID", (req, res) => {
   });
 });
 
+app.get("/api/appointments/:staffID/:eventID", (req, res) => {
+  const { staffID, eventID } = req.params;
+  const sql = "SELECT a.appointmentID, a.startTime, a.endTime, a.status, d.donorName, e.eventLocation, e.eventDate FROM appointment a JOIN donor d ON a.donorID = d.donorID JOIN event e ON a.eventID = e.eventID WHERE a.staffID = ? AND a.eventID = ?";
+  db.query(sql, [staffID, eventID], (err, data) => {
+    if (err) {
+      console.error("Error fetching appointments:", err);
+      return res.status(500).json({ success: false, message: "Error fetching appointments." });
+    }
+    console.log("Fetched appointments from DB:", data); // Debugging log
+    res.status(200).json(data);
+  });
+});
+
+// Delete an appointment by appointmentID
+app.delete("/api/appointments/:appointmentID", (req, res) => {
+  const { appointmentID } = req.params;
+  const sql = "DELETE FROM appointment WHERE appointmentID = ?";
+  db.query(sql, [appointmentID], (err, result) => {
+    if (err) {
+      console.error("Error deleting appointment:", err);
+      return res.status(500).json({ success: false, message: "Error deleting appointment." });
+    }
+    res.status(200).json({ success: true, message: "Appointment deleted successfully." });
+  });
+});
+
 app.listen(8081, () => {
   console.log("Listening on port 8081");
 });

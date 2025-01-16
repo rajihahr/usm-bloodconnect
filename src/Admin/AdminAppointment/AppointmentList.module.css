@@ -31,6 +31,16 @@
     font-weight: 500;
     justify-content: start;
   }
+
+  .eventTitleLink {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .eventTitleLink:hover {
+    text-decoration: underline;
+  }  
   
   @media (max-width: 991px) {
     .mainContent,

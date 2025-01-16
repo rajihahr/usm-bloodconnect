@@ -98,18 +98,18 @@ const BloodConnectApp = () => {
     <div className={styles.app}>
       <Header user={user} onSignOut={handleSignOut} />
       <main className={styles.main}>
-      <ScrollToTop />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={
-            user?.role === 'donor' ? <Hero user={user} /> : <Navigate to="/sign-in" />
+            !user || user?.role === 'donor' ? <Hero user={user} /> : <Navigate to="/sign-in" />
           }/>
           <Route path="/sign-in" element={<SignIn onSignIn={handleSignIn} />} />
           <Route path="/sign-up" element={<SignUp onSignUp={handleSignUp} />} />
           <Route path="/faqs" element={
-            user?.role === 'donor' ? <FAQPage user={user} /> : <Navigate to="/sign-in" />
+            !user || user?.role === 'donor' ? <FAQPage user={user} /> : <Navigate to="/sign-in" />
           }/>
           <Route path="/about-us" element={
-            user?.role === 'donor' ? <AboutUs user={user} /> : <Navigate to="/sign-in" />
+            !user || user?.role === 'donor' ? <AboutUs user={user} /> : <Navigate to="/sign-in" />
           }/>
           <Route path="/feedback" element={
             user?.role === 'donor' ? <FeedbackPage user={user} /> : <Navigate to="/sign-in" />
@@ -163,7 +163,7 @@ const BloodConnectApp = () => {
             user?.role === 'medical-staff' ? <DonationPage user={user} /> :<Navigate to="/sign-in"/>
           }/>
         </Routes>
-
+  
         {location.pathname === '/' && (
           <>
             <FeatureSection />
@@ -173,7 +173,7 @@ const BloodConnectApp = () => {
         )}
       </main>
     </div>
-  );
+  );  
 };
 
 export default BloodConnectApp;
