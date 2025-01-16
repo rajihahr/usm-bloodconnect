@@ -6,6 +6,7 @@ import styles from "./QuestionnaireForm.module.css";
 import Popup from "./Popup";
 import IneligiblePopup from "./IneligiblePopup";
 import IncompleteFormPopup from "./IncompleteFormPopup";
+import DuplicateFormPopup from "./DuplicateFormPopup";
 import { Link } from "react-router-dom";
 
 export default function QuestionnaireForm({ user }) {  // Add user prop
@@ -14,6 +15,7 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
   const [showEligiblePopup, setShowEligiblePopup] = useState(false);
   const [showIneligiblePopup, setShowIneligiblePopup] = useState(false);
   const [showIncompleteFormPopup, setShowIncompleteFormPopup] = useState(false);
+  const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);  
   const [popupData, setPopupData] = useState({ donorID: null, eventID: null });
 
   // Get eventId from location state, but donorID from user session
@@ -77,7 +79,10 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
       credentials: 'include',  // Include credentials for session
       body: JSON.stringify(questionResponses),
     })
-      .then((response) => response.json())
+    .then((response) => {
+      console.log('Response status:', response.status);  // Log response status
+      return response.json();
+    })
       .then((data) => {
         if (data.success) {
           console.log("Responses saved successfully");    
@@ -92,12 +97,17 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
           } else {
             setShowIneligiblePopup(true);
           }
-        } else {
-          console.error("Error saving responses:", data.message); 
+        } 
+        else {
+          if (data.code === "DUPLICATE_ENTRY") {
+            setShowDuplicatePopup(true);
+          } else {
+          console.error("Error saving responses:", data.message);
+          }
         }
       })
       .catch((error) => {
-        console.error("Error saving responses:", error);
+          console.error("Error saving responses:", error.message || error);
       });
   };
 
@@ -105,6 +115,7 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
     setShowEligiblePopup(false);
     setShowIneligiblePopup(false);
     setShowIncompleteFormPopup(false);
+    setShowDuplicatePopup(false); 
   };
 
   return (
@@ -161,6 +172,9 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
       {showIneligiblePopup && <IneligiblePopup onClose={handleClosePopup} />}
       {showIncompleteFormPopup && (
         <IncompleteFormPopup message="Please answer all questions before submitting." onClose={handleClosePopup} />
+      )}
+      {showDuplicatePopup && (
+        <DuplicateFormPopup message="Please answer all questions before submitting." onClose={handleClosePopup} />
       )}
     </section>
   );
