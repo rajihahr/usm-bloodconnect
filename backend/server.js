@@ -623,6 +623,35 @@ app.delete("/api/appointments/:appointmentID", (req, res) => {
   });
 });
 
+// Retrieve Event Details for a Specific Staff Member
+app.get("/staff-appointments/:staffID", (req, res) => { 
+  const { staffID } = req.params;
+  
+  if (!staffID) {
+    return res.status(400).json({ error: true, message: "Staff ID is required." });
+  }
+
+  const query = `
+    SELECT e.eventName, e.eventLocation, e.eventDate, e.startTime, e.endTime 
+    FROM event e
+    JOIN appointment a ON e.eventID = a.eventID
+    WHERE a.staffID = ?
+  `;
+
+  db.query(query, [staffID], (err, appointments) => {
+    if (err) {
+      console.error("Error querying appointments:", err);
+      return res.status(500).json({ error: true, message: "Error querying appointments." });
+    }
+
+    if (appointments.length === 0) {
+      return res.json({ events: [], message: "No events found for this staff member." });
+    }
+
+    res.json({ events: appointments });
+  });
+});
+
 app.listen(8081, () => {
   console.log("Listening on port 8081");
 });
