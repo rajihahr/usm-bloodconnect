@@ -350,7 +350,6 @@ app.get("/questions", (req, res) => {
 app.post('/saveResponses', (req, res) => {
   const responses = req.body; // Get the array of responses from the frontend
 
-  // Create an array of promises for all database insertions
   const insertPromises = responses.map((response) => {
     const { donorID, questionID, answer, eventId } = response;
 
@@ -359,24 +358,32 @@ app.post('/saveResponses', (req, res) => {
 
       db.query(query, [donorID, questionID, answer, eventId], (err, result) => {
         if (err) {
-          console.error('Error saving response:', err);
-          return reject(err); // Reject the promise on error
+          console.error('Database error:', err); // Log full error details
+          if (err.code === 'ER_DUP_ENTRY') {
+            return reject({ code: 'ER_DUP_ENTRY', message: 'Duplicate entry detected' });
+          }
+          return reject({ code: 'GENERAL_ERROR', message: err.message });
         }
-        console.log(`Response saved for question: ${questionID}`);
         resolve(result); // Resolve the promise on success
       });
     });
   });
 
-  // Wait for all insertions to complete
   Promise.all(insertPromises)
     .then(() => {
       res.json({ success: true, message: 'All responses saved successfully.' });
     })
     .catch((err) => {
-      res.status(500).json({ success: false, message: 'Error saving responses.', error: err });
+      console.error('Catch block error:', err); // Log the error coming from reject
+
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ success: false, code: 'DUPLICATE_ENTRY', message: 'Duplicate entry detected' });
+      } else {
+        return res.status(500).json({ success: false, message: 'Error saving responses.', error: err.message });
+      }
     });
 });
+
 
 // Fetch feedbacks
 app.get("/feedbacks", (req, res) =>
