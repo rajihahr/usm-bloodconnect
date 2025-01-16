@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Feedback.module.css";
 import Button from "../HomePage/Button";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Popup } from "./Popup"; // Import the Popup component
 
 export const FeedbackPage = () => {
   const location = useLocation();
   const { donorID } = location.state || {};
   const [feedbackText, setFeedbackText] = useState('');
-  const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     console.log("Donor ID from location:", donorID); // Debugging: Log donorID on every render
@@ -34,7 +35,7 @@ export const FeedbackPage = () => {
       .then((data) => {
         if (data.success) {
           console.log("Feedback submitted successfully!");
-          navigate("/feedback-popup"); // Navigate to the feedback popup page
+          setShowPopup(true); // Show popup after successful feedback submission
         } else {
           console.error("Error submitting feedback:", data.message);
         }
@@ -42,6 +43,10 @@ export const FeedbackPage = () => {
       .catch((error) => {
         console.error("Error submitting feedback:", error);
       });
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -70,6 +75,9 @@ export const FeedbackPage = () => {
           </div>
         </form>
       </div>
+
+      {/* Conditionally render the popup */}
+      {showPopup && <Popup onClose={closePopup} />}
     </div>
   );
 };

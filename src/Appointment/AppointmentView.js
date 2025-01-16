@@ -17,7 +17,7 @@ function AppointmentView({ user }) {
         const response = await fetch(`http://localhost:8081/api/appointments/${donorID}`);
         const data = await response.json();
         console.log("Fetched appointment data:", data);
-        const filteredAppointments = data.filter(appointment => appointment.status === 'No Show');
+        const filteredAppointments = data.filter(appointment => appointment.status === 'Pending');
         setAppointments(filteredAppointments);
       } catch (error) {
         console.error('Error fetching appointments:', error);

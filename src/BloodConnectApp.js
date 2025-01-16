@@ -17,7 +17,6 @@ import BookAppointment from './BookAppointment/BookAppointment';
 import ConfirmationModal from './BookAppointment/ConfirmationModal';
 import AppointmentView from './Appointment/AppointmentView';
 import { FeedbackPage } from './FeedbackPage/FeedbackPage';
-import { Popup } from './FeedbackPage/Popup';
 import { FeedbackPageAdmin } from './Admin/FeedbackAdmin/FeedbackPageAdmin';
 import EventsPage from './Admin/AdminEventDetails/EventsPage';
 import { BloodBankDashboard } from './Admin/BloodBank/BloodBankDashboard';
@@ -26,16 +25,16 @@ import DonationPage from './MedicalStaff/AppointmentDonor';
 import { MedicalStaffPage } from './Admin/AdminMedicalStaff/MedicalStaffPage';
 import AppointmentHistory from './Appointment/AppointmentHistory';
 import { AppointmentList } from './Admin/AdminAppointment/AppointmentList';
-import { AppointmentListMedicalStaff} from './Admin/AdminAppointment/AppointmentListMedicalStaff';
+import { AppointmentListMedicalStaff } from './Admin/AdminAppointment/AppointmentListMedicalStaff';
 import MedicalStaffAppDetails from './Admin/AdminAppointment/MedicalStaffAppDetails';
 import ScrollToTop from './ScrollToTop.js';
 
 const BloodConnectApp = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Check authentication status when the app loads
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -49,6 +48,8 @@ const BloodConnectApp = () => {
         }
       } catch (error) {
         console.error('Error checking authentication:', error);
+      } finally {
+        setLoading(false); // Ensure loading state is set to false after session check
       }
     };
 
@@ -56,40 +57,42 @@ const BloodConnectApp = () => {
   }, []);
 
   const handleSignIn = (userData) => {
-    setUser(userData);
+    setUser(userData); // Save user data (includes role)
     if (userData.role === 'admin') {
       navigate('/admin-home');
-    } else if (userData.role === 'medical-staff') {
+    } 
+    else if (userData.role === 'medical-staff') {
       navigate('/appointment-view-ms');
-    } else {
+    }
+    else if (userData.role === 'donor'){
       navigate('/');
     }
   };
 
   const handleSignUp = (userData) => {
     setUser(userData); // Save user data (includes role)
-      navigate('/sign-in');
+    navigate('/sign-in');
   };
 
   const handleSignOut = async () => {
     try {
-      const response = await fetch('http://localhost:8081/sign-out', {
-        method: 'POST',
-        credentials: 'include'
+      const response = await fetch("http://localhost:8081/sign-out", {
+        method: "POST",
+        credentials: "include",
       });
-      
       const data = await response.json();
-      
       if (data.success) {
         setUser(null);
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
+        navigate('/');
       }
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error("Error signing out:", error);
     }
-  };  
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Add a loading state while checking session
+  }
 
   return (
     <div className={styles.app}>
@@ -97,35 +100,68 @@ const BloodConnectApp = () => {
       <main className={styles.main}>
       <ScrollToTop />
         <Routes>
-          <Route path="/" element={<Hero user={user} />} />
+          <Route path="/" element={
+            user?.role === 'donor' ? <Hero user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/sign-in" element={<SignIn onSignIn={handleSignIn} />} />
           <Route path="/sign-up" element={<SignUp onSignUp={handleSignUp} />} />
-          <Route path="/faqs" element={<FAQPage />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/feedback" element={<FeedbackPage />} />
-          <Route path="/feedback-popup" element={<Popup />} />
-          <Route path="/" element={<Hero user={user} />} />
+          <Route path="/faqs" element={
+            user?.role === 'donor' ? <FAQPage user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/about-us" element={
+            user?.role === 'donor' ? <AboutUs user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/feedback" element={
+            user?.role === 'donor' ? <FeedbackPage user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/questionnaire-start-page" element={
-            user ? <QuestionnaireStartPage user={user} /> : <Navigate to="/sign-in" />}/>
-          <Route path="/questions" element={user ? <EligibilityCheck /> : <Navigate to="/sign-in" />}/>
+            user?.role === 'donor' ? <QuestionnaireStartPage user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/questions" element={
+            user?.role === 'donor' ? <EligibilityCheck user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/book-appointment" element={
-            user ? <BookAppointment user={user} /> : <Navigate to="/sign-in" />}/>
+            user?.role === 'donor' ? <BookAppointment user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/confirmation-modal" element={
-            user ? <ConfirmationModal user={user} /> : <Navigate to="/sign-in" />}/>
+            user?.role === 'donor' ? <ConfirmationModal user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/appointment-view" element={
-            user ? <AppointmentView user={user} /> : <Navigate to="/sign-in" />}/>
+            user?.role === 'donor' ? <AppointmentView user={user} /> : <Navigate to="/sign-in" />
+          }/>
           <Route path="/appointment-history" element={
-            user ? <AppointmentHistory user={user} /> : <Navigate to="/sign-in" />}/>
-          <Route path="/admin-home" element={user?.role === 'admin' ? <AdminDashboard user={user} /> : <Navigate to="/" />}/>
-          <Route path="/admin-feedback" element={<FeedbackPageAdmin />}/>
-          <Route path="/admin-event" element={<EventsPage />}/>
-          <Route path="/bloodbank" element={<BloodBankDashboard />}/>
-          <Route path="/appointment-view-ms" element={user?.role === 'medical-staff' ? <AppointmentViewMS user={user} /> : <Navigate to="/" />}/>
-          <Route path="/donor-details" element={<DonationPage />}/>
-          <Route path="/admin-medical-staff" element={<MedicalStaffPage />}/>
-          <Route path="/admin-appointment" element={<AppointmentList />} />
-          <Route path="/admin-appointment-medicalstaff" element={<AppointmentListMedicalStaff />} />
-          <Route path="/medicalstaff-app-details" element={<MedicalStaffAppDetails />} />
+            user?.role === 'donor' ? <AppointmentHistory user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/admin-home" element={
+            user?.role === 'admin' ? <AdminDashboard user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/admin-feedback" element={
+            user?.role === 'admin' ? <FeedbackPageAdmin user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/admin-event" element={
+            user?.role === 'admin' ? <EventsPage user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/bloodbank" element={
+            user?.role === 'admin' ? <BloodBankDashboard user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/admin-medical-staff" element={
+            user?.role === 'admin' ? <MedicalStaffPage user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/admin-appointment" element={
+            user?.role === 'admin' ? <AppointmentList user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/admin-appointment-medicalstaff" element={
+            user?.role === 'admin' ? <AppointmentListMedicalStaff user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/medicalstaff-app-details" element={
+            user?.role === 'admin' ? <MedicalStaffAppDetails user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/appointment-view-ms" element={
+            user?.role === 'medical-staff' ? <AppointmentViewMS user={user} /> : <Navigate to="/sign-in" />
+          }/>
+          <Route path="/donor-details" element={
+            user?.role === 'medical-staff' ? <DonationPage user={user} /> :<Navigate to="/sign-in"/>
+          }/>
         </Routes>
 
         {location.pathname === '/' && (

@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Popup.module.css';
 import { Link } from 'react-router-dom';
 
-export function Popup() {
+export function Popup({ onClose }) {
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popupContent}>
@@ -13,13 +13,14 @@ export function Popup() {
         />
         <h3 className={styles.popupTitle}>Thank you for your feedback!</h3>
         <p className={styles.popupMessage}>
-        Your input is valuable in helping us improve our system.
+          Your input is valuable in helping us improve our system.
         </p>
         <Link to='/'>
-        <button className={styles.closeButton}>
-          Home
-        </button></Link>
-        </div>
+          <button className={styles.closeButton} onClick={onClose}>
+            Home
+          </button>
+        </Link>
       </div>
+    </div>
   );
 }
