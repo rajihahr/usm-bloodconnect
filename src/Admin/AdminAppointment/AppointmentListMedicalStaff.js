@@ -1,35 +1,51 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import styles from './AppointmentList.module.css';
 import { AppointmentCardMedicalStaff } from './AppointmentCardMedicalStaff';
 
 export function AppointmentListMedicalStaff() {
   const location = useLocation();
   const eventTitle = location.state?.title || "No Title Provided"; // Retrieve title from state
+  const eventID = location.state?.eventID; // Retrieve eventID from state
+  const [medicalStaff, setMedicalStaff] = useState([]);
 
-  const appointments = [
-    { id: 1, name: 'Dr. Syaza Sufia Binti Roselan' },
-    { id: 2, name: 'Dr. Maisarah Qistina Binti Meor Sha\'azizi' },
-    { id: 3, name: 'Dr. Rajihah Binti Mohd Rosydi' },
-    { id: 4, name: 'Dr. Najwa Batrisyia Binti Mohamad' },
-    { id: 5, name: 'Dr. Marsya Diyana Binti Meor Sha\'azizi' }
-  ];
+  console.log('AppointmentListMedicalStaff:', { eventID, eventTitle });
 
-  const handleView = (id) => {
-    console.log(`Viewing appointment ${id}`);
-  };
+  useEffect(() => {
+    const fetchMedicalStaff = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/api/admin-medical-staff");
+        const data = await response.json();
+
+        if (data) {
+          setMedicalStaff(data);
+        } else {
+          console.error("Error fetching medical staff:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching medical staff:", error);
+      }
+    };
+
+    fetchMedicalStaff();
+  }, []);
 
   return (
     <div className={styles.appointmentsContainer}>
       <main className={styles.mainContent}>
-        <h2 className={styles.pageTitle}>{eventTitle}</h2>
+        <h2 className={styles.pageTitle}>
+          <Link to="/admin-appointment" className={styles.eventTitleLink}>
+            {eventTitle}
+          </Link>
+        </h2>
         <section className={styles.appointmentsList}>
-          {appointments.map((appointment) => (
+          {medicalStaff.map((staff) => (
             <AppointmentCardMedicalStaff
-              key={appointment.id}
-              name={appointment.name}
+              key={staff.staffID}
+              name={staff.staffName} // Assuming the name field is `staffName`
               eventTitle={eventTitle} // Pass eventTitle as a prop
-              onView={() => handleView(appointment.id)}
+              staffID={staff.staffID} // Pass staffID as a prop
+              eventID={eventID} // Pass eventID as a prop
             />
           ))}
         </section>

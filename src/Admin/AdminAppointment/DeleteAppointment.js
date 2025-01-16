@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-// import { Link } from 'react-router-dom';
 import styles from './Popup.module.css';
 
-function DeleteAppointment() {
+function DeleteAppointment({ onClose, appointment, onDelete }) {
   const [showFirstPopup, setShowFirstPopup] = useState(true); // State for showing the first popup
   const [showSecondPopup, setShowSecondPopup] = useState(false); // State for showing the second popup
 
@@ -15,14 +14,13 @@ function DeleteAppointment() {
   // Click the cancel button click on the first popup 
   const handleCancelClick = () => {
     setShowFirstPopup(false); // Close the first popup
-    window.location.reload();
+    onClose();
   };
 
-  // Close both popups (first and second) and redirect
-  const closeBothPopups = () => {
-    setShowFirstPopup(false); // Close the first popup
+  // Close both popups (first and second) and delete appointment
+  const handleDelete = () => {
+    onDelete(appointment.appointmentID);
     setShowSecondPopup(false); // Close the second popup
-    // window.location.reload();
   };
 
   return (
@@ -73,19 +71,19 @@ function DeleteAppointment() {
               alt="Appointment status update confirmation icon"
             />
             <p className={styles.statusMessage}>
-            Appoinment has been deleted successfully!
+            Appointment has been deleted successfully!
               <br />
               <br />
             </p>
             <div className={styles.buttonContainer}>
-              {/* Use the closeBothPopups to hide both popups and then redirect */}
-                <button
-                  className={styles.button}
-                  tabIndex={0}
-                  onClick={closeBothPopups}
-                >
-                  Close 
-                </button>
+              {/* Use handleDelete to delete the appointment */}
+              <button
+                className={styles.button}
+                tabIndex={0}
+                onClick={handleDelete}
+              >
+                Close 
+              </button>
             </div>
           </div>
         </div>
