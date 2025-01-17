@@ -652,6 +652,25 @@ app.get("/staff-appointments/:staffID", (req, res) => {
   });
 });
 
+app.get("/events-appointment-view/:eventID", (req, res) => {
+  const { eventID } = req.params;  // Retrieve the eventID from the URL
+
+  const query = "SELECT * FROM event WHERE eventID = ?"; 
+
+  db.query(query, [eventID], (err, eventdata) => {
+    if (err) {
+      console.error("Error querying events:", err);
+      return res.status(500).json({ error: true, message: "Error querying events." });
+    }
+
+    if (eventdata.length === 0) {
+      return res.json({ event: null, message: "No event found." });
+    }
+
+    res.json({ event: eventdata[0] });
+  });
+});
+
 app.listen(8081, () => {
   console.log("Listening on port 8081");
 });
