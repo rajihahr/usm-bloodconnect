@@ -20,9 +20,13 @@ export const AppointmentViewMS = () => {
       <main className={styles.mainContent}>
         <h1 className={styles.pageTitle}>Upcoming Appointments</h1>
         <section className={styles.appointmentGrid}>
-          {appointments.map((appointment, index) => (
-            <AppointmentCardMS key={index} {...appointment} />
-          ))}
+          {appointments.length > 0 ? (
+            appointments.map((appointment, index) => (
+              <AppointmentCardMS key={index} {...appointment} />
+            ))
+          ) : (
+            <p>No appointments found for this staff member.</p>
+          )}
         </section>
       </main>
     </div>
