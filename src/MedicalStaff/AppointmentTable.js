@@ -1,55 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './AppointmentTable.module.css';
 import AppointmentStatus from './AppointmentStatus';
 import AppointmentNoShow from './AppointmentNoShow';
 
-const appointments = [
-  { id: 1, time: '8.00 AM - 8.30 AM', name: 'John Doe', status: 'pending' },
-  { id: 2, time: '8.30 AM - 9.00 AM', name: 'John Doe', status: 'pending' },
-  { id: 3, time: '9.00 AM - 9.30 AM', name: 'John Doe', status: 'pending' },
-  { id: 4, time: '9.30 AM - 10.00 AM', name: '', status: 'empty' },
-  { id: 5, time: '10.00 AM - 10.30 AM', name: 'John Doe', status: 'pending' },
-  { id: 6, time: '10.30 AM - 11.00 AM', name: '', status: 'empty' },
-  { id: 7, time: '11.00 AM - 11.30 AM', name: 'John Doe', status: 'pending' },
-  { id: 8, time: '11.30 AM - 12.00 PM', name: 'John Doe', status: 'pending' },
-  { id: 9, time: '12.00 PM - 12.30 PM', name: 'John Doe', status: 'pending' },
-  { id: 10, time: '12.30 PM - 1.00 PM', name: 'John Doe', status: 'pending' },
-  { id: 11, time: '10.30 AM - 11.00 AM', name: '', status: 'empty' },
-  { id: 12, time: '11.00 AM - 11.30 AM', name: 'John Doe', status: 'pending' },
-  { id: 13, time: '11.30 AM - 12.00 PM', name: 'John Doe', status: 'pending' },
-  { id: 14, time: '12.00 PM - 12.30 PM', name: 'John Doe', status: 'pending' },
-  { id: 15, time: '12.30 PM - 1.00 PM', name: 'John Doe', status: 'pending' },
-];
+function formatTime(timeString) {
+  if (!timeString) return ''; // Check if timeString is undefined
+  const [hours, minutes] = timeString.split(':');
+  const date = new Date();
+  date.setHours(hours, minutes);
+  return date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 
-export default function AppointmentTable() {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
-  const [selectedAppointment, setSelectedAppointment] = useState(null); // Track selected appointment
-  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false); // Track rejection modal visibility
+export default function AppointmentTable({ user, eventID }) {
+  const [appointments, setAppointments] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const staffID = user?.id;
+
+  useEffect(() => {
+    if (!staffID || !eventID) return;
+
+    fetch(`http://localhost:8081/staff-appointments/${staffID}/${eventID}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Fetched appointments:', data); // Log the fetched data
+        setAppointments(data.events || []);
+      })
+      .catch(error => console.error('Error fetching appointments:', error));
+  }, [staffID, eventID]);
 
   const handleApproveClick = (appointment) => {
-    setSelectedAppointment(appointment); // Set the selected appointment
-    setIsModalOpen(true); // Open modal
+    setSelectedAppointment(appointment);
+    setIsModalOpen(true);
   };
 
   const handleRejectClick = (appointment) => {
-    setSelectedAppointment(appointment); // Set the selected appointment
-    setIsRejectModalOpen(true); // Open rejection modal
+    setSelectedAppointment(appointment);
+    setIsRejectModalOpen(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false); // Close approval modal
-    setSelectedAppointment(null); // Reset selected appointment
+    setIsModalOpen(false);
+    setSelectedAppointment(null);
   };
 
   const closeRejectModal = () => {
-    setIsRejectModalOpen(false); // Close rejection modal
-    setSelectedAppointment(null); // Reset selected appointment
+    setIsRejectModalOpen(false);
+    setSelectedAppointment(null);
+  };
+
+  const formatTimeRange = (startTime, endTime) => {
+    return `${formatTime(startTime)} - ${formatTime(endTime)}`; // Concatenate startTime and endTime
   };
 
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table}>
-        {/* Table Header */}
         <thead className={styles.tableHeader}>
           <tr>
             <th className={styles.headerCell}>No.</th>
@@ -60,13 +70,14 @@ export default function AppointmentTable() {
           </tr>
         </thead>
 
-        {/* Table Body */}
         <tbody>
-          {appointments
-            .map((appointment, index) => (
+          {appointments.length > 0 ? (
+            appointments.map((appointment, index) => (
               <tr key={appointment.id} className={styles.tableRow}>
-                <td className={styles.tableCell}>{index + 1}</td> {/* Dynamically display row number */}
-                <td className={styles.tableCell}>{appointment.time}</td>
+                <td className={styles.tableCell}>{index + 1}</td>
+                <td className={styles.tableCell}>
+                  {formatTimeRange(appointment.startTime, appointment.endTime)}
+                </td>
                 <td className={styles.tableCell}>{appointment.name || '-'}</td>
                 <td className={styles.tableButtonCell}>
                   <button
@@ -93,13 +104,18 @@ export default function AppointmentTable() {
                   </button>
                 </td>
               </tr>
-            ))}
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className={styles.noAppointments}>
+                No appointments found for this staff member and event.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
-      {/* Render the modal only when isModalOpen is true */}
       {isModalOpen && <AppointmentStatus onClose={closeModal} appointment={selectedAppointment} />}
-      {/* Render the rejection modal */}
       {isRejectModalOpen && (<AppointmentNoShow onClose={closeRejectModal} appointment={selectedAppointment} />)}
     </div>
   );

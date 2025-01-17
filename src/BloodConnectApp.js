@@ -21,6 +21,7 @@ import { FeedbackPageAdmin } from './Admin/FeedbackAdmin/FeedbackPageAdmin';
 import EventsPage from './Admin/AdminEventDetails/EventsPage';
 import { BloodBankDashboard } from './Admin/BloodBank/BloodBankDashboard';
 import { AppointmentViewMS } from './MedicalStaff/AppointmentViewMS';
+import { StaffAppointmentView } from './MedicalStaff/StaffAppointmentView';
 import DonationPage from './MedicalStaff/AppointmentDonor';
 import { MedicalStaffPage } from './Admin/AdminMedicalStaff/MedicalStaffPage';
 import AppointmentHistory from './Appointment/AppointmentHistory';
@@ -161,6 +162,9 @@ const BloodConnectApp = () => {
           }/>
           <Route path="/donor-details" element={
             user?.role === 'medical-staff' ? <DonationPage user={user} /> :<Navigate to="/sign-in"/>
+          }/>
+          <Route path="/staff-appointments/:eventID" element={
+          user?.role === 'medical-staff' ? <StaffAppointmentView user={user} /> : <Navigate to="/sign-in" />
           }/>
         </Routes>
   
