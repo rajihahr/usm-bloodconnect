@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './AppointmentCardMS.module.css';
 
 function formatDate(isoDate) {
@@ -21,7 +21,14 @@ function formatTime(timeString) {
   });
 }
 
-function AppointmentCardMS({ eventName, eventLocation, eventDate, startTime, endTime }) {
+function AppointmentCardMS({ eventID, eventName, eventLocation, eventDate, startTime, endTime }) {
+  const navigate = useNavigate(); // Initialize the navigate hook
+
+  const handleNavigate = () => {
+    // Correctly use navigate with the eventID passed as state
+    navigate('/donor-details', { state: { eventID } });
+  };
+
   return (
     <article className={styles.appointmentCard}>
       <h2 className={styles.title}>{eventName}</h2>
@@ -52,9 +59,10 @@ function AppointmentCardMS({ eventName, eventLocation, eventDate, startTime, end
         </div>
       </div>
       <div className={styles.actions}>
-        <Link to="/donor-details">
-          <button className={styles.actionButton}>View</button>
-        </Link>
+        {/* Trigger the navigate function with state (eventID) when the button is clicked */}
+        <button onClick={handleNavigate} className={styles.actionButton}>
+          View
+        </button>
       </div>
     </article>
   );
