@@ -652,6 +652,55 @@ app.get("/staff-appointments/:staffID", (req, res) => {
   });
 });
 
+// Add this endpoint to server.js
+app.get('/get-staff-session', (req, res) => {
+  // Return the staff data from your session
+  if (req.session && req.session.staff) {
+    res.json({ staff: req.session.staff });
+  } else {
+    res.status(401).json({ error: 'No staff session found' });
+  }
+});
+
+// Retrieve Detailed Appointments for a Specific Staff Member and Event
+app.get("/staff-appointments/:staffID/:eventID", (req, res) => { 
+  const { staffID, eventID } = req.params;
+
+  if (!staffID || !eventID) {
+    return res.status(400).json({ error: true, message: "Staff ID and Event ID are required." });
+  }
+
+  console.log(`Fetching appointments for staffID: ${staffID}, eventID: ${eventID}`);
+
+  const query = `
+    SELECT 
+      a.appointmentID AS id,
+      e.eventName,
+      e.eventLocation,
+      e.eventDate,
+      TIME_FORMAT(a.startTime, '%H:%i') AS startTime,
+      TIME_FORMAT(a.endTime, '%H:%i') AS endTime,
+      d.donorName AS name,
+      a.status
+    FROM appointment a
+    LEFT JOIN event e ON e.eventID = a.eventID
+    LEFT JOIN donor d ON d.donorID = a.donorID
+    WHERE a.staffID = ? AND a.eventID = ?
+    ORDER BY a.startTime ASC
+  `;
+
+  db.query(query, [staffID, eventID], (err, appointments) => {
+    if (err) {
+      console.error("Error querying appointments:", err);
+      return res.status(500).json({ error: true, message: "Error querying appointments." });
+    }
+
+    console.log("Query results:", appointments);
+
+    res.json({ events: appointments });
+  });
+});
+
 app.listen(8081, () => {
   console.log("Listening on port 8081");
 });
