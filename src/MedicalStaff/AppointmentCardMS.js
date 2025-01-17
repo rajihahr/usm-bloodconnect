@@ -21,7 +21,7 @@ function formatTime(timeString) {
   });
 }
 
-function AppointmentCardMS({ eventName, eventLocation, eventDate, startTime, endTime }) {
+function AppointmentCardMS({ eventID, eventName, eventLocation, eventDate, startTime, endTime }) {
   return (
     <article className={styles.appointmentCard}>
       <h2 className={styles.title}>{eventName}</h2>
@@ -52,7 +52,7 @@ function AppointmentCardMS({ eventName, eventLocation, eventDate, startTime, end
         </div>
       </div>
       <div className={styles.actions}>
-        <Link to="/donor-details">
+        <Link to={`/staff-appointments/${eventID}`}>
           <button className={styles.actionButton}>View</button>
         </Link>
       </div>
