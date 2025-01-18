@@ -681,6 +681,7 @@ app.get("/staff-appointments/:staffID/:eventID", (req, res) => {
       TIME_FORMAT(a.startTime, '%H:%i') AS startTime,
       TIME_FORMAT(a.endTime, '%H:%i') AS endTime,
       d.donorName AS name,
+      d.donorID,
       a.status
     FROM appointment a
     LEFT JOIN event e ON e.eventID = a.eventID
@@ -698,6 +699,135 @@ app.get("/staff-appointments/:staffID/:eventID", (req, res) => {
     console.log("Query results:", appointments);
 
     res.json({ events: appointments });
+  });
+});
+
+app.get("/events-appointment-view/:eventID", (req, res) => {
+  const { eventID } = req.params;  // Retrieve the eventID from the URL
+
+  const query = "SELECT * FROM event WHERE eventID = ?"; 
+
+  db.query(query, [eventID], (err, eventdata) => {
+    if (err) {
+      console.error("Error querying events:", err);
+      return res.status(500).json({ error: true, message: "Error querying events." });
+    }
+
+    if (eventdata.length === 0) {
+      return res.json({ event: null, message: "No event found." });
+    }
+
+    res.json({ event: eventdata[0] });
+  });
+});
+
+// Fetch blood types
+app.get('/blood-types', (req, res) => {
+  const query = 'SELECT bloodID, bloodType FROM bloodBank';
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching blood types:', err);
+      return res.status(500).json({ error: 'Error fetching blood types' });
+    }
+    res.json(results);
+  });
+});
+
+// Update donor blood type
+app.post('/update-donor-blood', (req, res) => {
+  const { donorID, bloodType } = req.body;
+  
+  const query = 'UPDATE donor SET donorBloodType = ? WHERE donorID = ?';
+  
+  db.query(query, [bloodType, donorID], (err, result) => {
+    if (err) {
+      console.error('Error updating donor blood type:', err);
+      return res.status(500).json({ error: 'Error updating donor blood type' });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Update appointment status
+app.post('/update-appointment-status', (req, res) => {
+  const { appointmentID, status } = req.body;
+  
+  const query = 'UPDATE appointment SET status = ? WHERE appointmentID = ?';
+  
+  db.query(query, [status, appointmentID], (err, result) => {
+    if (err) {
+      console.error('Error updating appointment status:', err);
+      return res.status(500).json({ error: 'Error updating appointment status' });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Update blood bank quantity
+app.post('/update-blood-quantity', (req, res) => {
+  const { bloodID, quantity } = req.body;
+  
+  const query = 'UPDATE bloodBank SET Quantity = Quantity + ? WHERE bloodID = ?';
+  
+  db.query(query, [quantity, bloodID], (err, result) => {
+    if (err) {
+      console.error('Error updating blood quantity:', err);
+      return res.status(500).json({ error: 'Error updating blood quantity' });
+    }
+    res.json({ success: true });
+  });
+});
+
+app.delete("/appointments/:appointmentId", (req, res) => {
+  const { appointmentId } = req.params;
+
+  const query = "DELETE FROM appointment WHERE appointmentID = ?";
+
+  db.query(query, [appointmentId], (error, results) => {
+    if (error) {
+      console.error("Error deleting appointment:", error);
+      return res.status(500).json({ error: "Failed to delete appointment" });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+    res.status(200).json({ message: "Appointment deleted successfully" });
+  });
+});
+
+// Get all blood types and their quantities
+app.get("/bloodbank", (req, res) => {
+  const query = `
+    SELECT bloodType, Quantity as quantity 
+    FROM bloodBank 
+    ORDER BY bloodType`;
+
+  db.query(query, (err, results) => {
+    console.log("Blood bank query results:", results); // Debug log
+    if (err) {
+      console.error("Error fetching blood bank data:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    const totalQuantity = results.reduce((sum, item) => sum + item.quantity, 0);
+
+    // Count total donors from appointment table where status is 'completed'
+    db.query(
+      "SELECT COUNT(DISTINCT donorID) as totalDonors FROM appointment WHERE status = 'Completed'",
+      (err2, donorResults) => {
+        if (err2) {
+          console.error("Error fetching donor count:", err2);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+
+        res.json({
+          bloodTypes: results,
+          totalDonors: donorResults[0].totalDonors,
+          totalBloodUnits: totalQuantity,
+        });
+      }
+    );
   });
 });
 

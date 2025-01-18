@@ -1,97 +1,94 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import styles from './AppointmentStatus.module.css';
+import React, { useState } from "react";
+import styles from "./AppointmentStatus.module.css";
 
-function AppointmentNoShow() {
+function AppointmentNoShow({ appointment, onClose, onDeleteSuccess }) {
   const [showFirstPopup, setShowFirstPopup] = useState(true); // State for showing the first popup
   const [showSecondPopup, setShowSecondPopup] = useState(false); // State for showing the second popup
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Click the confirm button click on the first popup
-  const handleConfirmClick = () => {
-    setShowFirstPopup(false); // Close the first popup
-    setShowSecondPopup(true); // Show the second popup
+  const handleConfirmClick = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        'http://localhost:8081/appointments/${appointment.id}',
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        setShowFirstPopup(false);
+        setShowSecondPopup(true);
+        onDeleteSuccess(appointment.id);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete appointment:", errorData);
+        alert(errorData.error || "Error: Could not delete the appointment.");
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      alert("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Click the cancel button click on the first popup 
   const handleCancelClick = () => {
     setShowFirstPopup(false); // Close the first popup
-    window.location.reload();
-  };
-
-  // Close both popups (first and second) and redirect
-  const closeBothPopups = () => {
-    setShowFirstPopup(false); // Close the first popup
-    setShowSecondPopup(false); // Close the second popup
-    window.location.reload();
+    onClose(); // Close modal
   };
 
   return (
     <div>
-      {/* First Modal with Cancel and Confirm Buttons */}
       {showFirstPopup && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-          <img
-          src="/Cancel.png"
-          className={styles.statusIcon}
-          alt="Success checkmark"
-        />
-          <h3 className={styles.popupTitle}>Confirm Status?</h3>
+            <img
+              src="/Cancel.png"
+              className={styles.statusIcon}
+              alt="Cancel icon"
+            />
+            <h3 className={styles.popupTitle}>Confirm Status?</h3>
             <p className={styles.statusMessage}>
-                Are you sure you want to confirm the status as 'No Show'? This action cannot be undone.
-              <br />
-              <br />
+              Are you sure you want to change the status to <b>No Show</b>? This
+              action cannot be undone.
             </p>
             <div className={styles.buttonContainer}>
               <button
                 className={styles.cancelButton}
-                onClick={handleCancelClick} // Close the first popup
-                tabIndex={0}
+                onClick={handleCancelClick}
+                disabled={isLoading}
               >
                 Cancel
               </button>
-
               <button
                 className={styles.confirmButton}
-                onClick={handleConfirmClick} // Show the second popup
-                tabIndex={0}
+                onClick={handleConfirmClick}
+                disabled={isLoading}
               >
-                Confirm
+                {isLoading ? "Processing..." : "Confirm"}
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Second Modal (appears after clicking Confirm on the first modal) */}
       {showSecondPopup && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <img
-              loading="lazy"
               src="/CheckMark.png"
               className={styles.statusIcon}
-              alt="Appointment status update confirmation icon"
+              alt="Success icon"
             />
             <p className={styles.statusMessage}>
-              The donor's appointment status has been updated to
-              <br />
-              <br />
-              <span className={styles.statusMessageBold}>NO SHOW.</span>
-              <br />
-              <br />
+              The donor's appointment status has been updated to <b>No Show</b>.
             </p>
-              {/* Use the closeBothPopups to hide both popups and then redirect */}
-              <Link to="/donor-details" onClick={closeBothPopups} className={styles.linkButton}>
-                <button
-                  className={styles.closeButton}
-                  tabIndex={0}
-                >
-                  Close 
-                </button>
-              </Link>
-            </div>
+            <button className={styles.closeButton} onClick={onClose}>
+              Close
+            </button>
           </div>
+        </div>
       )}
     </div>
   );
