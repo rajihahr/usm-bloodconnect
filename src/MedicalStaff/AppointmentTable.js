@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import styles from './AppointmentTable.module.css';
-import AppointmentStatus from './AppointmentStatus';
-import AppointmentNoShow from './AppointmentNoShow';
+import React, { useEffect, useState, useCallback } from "react";
+import styles from "./AppointmentTable.module.css";
+import AppointmentStatus from "./AppointmentStatus";
+import AppointmentNoShow from "./AppointmentNoShow";
 
 function formatTime(timeString) {
-  if (!timeString) return ""; // Check if timeString is undefined
+  if (!timeString) return "";
   const [hours, minutes] = timeString.split(":");
   const date = new Date();
   date.setHours(hours, minutes);
@@ -17,20 +17,20 @@ function formatTime(timeString) {
 export default function AppointmentTable({ user, eventID }) {
   const [appointments, setAppointments] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const staffID = user?.id;
 
   const fetchAppointments = useCallback(() => {
     if (!staffID || !eventID) return;
 
     fetch(`http://localhost:8081/staff-appointments/${staffID}/${eventID}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Fetched appointments:', data);
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched appointments:", data);
         setAppointments(data.events || []);
       })
-      .catch(error => console.error('Error fetching appointments:', error));
+      .catch((error) => console.error("Error fetching appointments:", error));
   }, [staffID, eventID]);
 
   useEffect(() => {
@@ -38,9 +38,11 @@ export default function AppointmentTable({ user, eventID }) {
   }, [fetchAppointments]);
 
   const isActionDisabled = (appointment) => {
-    return !appointment.name || 
-           appointment.status === 'Completed' || 
-           appointment.status === 'No Show';
+    return (
+      !appointment.name ||
+      appointment.status === "Completed" ||
+      appointment.status === "No Show"
+    );
   };
 
   const getButtonClasses = (appointment, type) => {
@@ -48,45 +50,34 @@ export default function AppointmentTable({ user, eventID }) {
     if (isActionDisabled(appointment)) {
       return `${baseClass} ${styles.disabledButton}`;
     }
-    return `${baseClass} ${type === 'reject' ? styles.rejectButton : styles.approveButton}`;
+    return `${baseClass} ${
+      type === "reject" ? styles.rejectButton : styles.approveButton
+    }`;
   };
 
   const handleApproveClick = (appointment) => {
-    console.log('Selected appointment:', appointment);
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
   };
 
-  const handleRejectClick = async (appointment) => {
-    try {
-      const response = await fetch(`http://localhost:8081/appointments/${appointment.id}`, {
-        method: 'DELETE',
-      });
+  const handleRejectClick = (appointment) => {
+    setSelectedAppointment(appointment);
+    setIsRejectModalOpen(true);
+  };
 
-      if (!response.ok) {
-        throw new Error('Failed to delete appointment');
-      }
-
-      fetchAppointments(); // Refresh appointments after deleting
-      
-      // Show success message (optional)
-      alert('Appointment marked as no-show and deleted successfully');
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      alert('Failed to delete appointment. Please try again.');
-    }
+  const handleDeleteSuccess = () => {
+    fetchAppointments(); // Refresh the appointments list after successful deletion
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAppointment(null);
-    fetchAppointments(); // Refresh appointments after closing modal
+    fetchAppointments();
   };
 
   const closeRejectModal = () => {
     setIsRejectModalOpen(false);
     setSelectedAppointment(null);
-    fetchAppointments(); // Refresh appointments after closing modal
   };
 
   const formatTimeRange = (startTime, endTime) => {
@@ -115,17 +106,21 @@ export default function AppointmentTable({ user, eventID }) {
                 <td className={styles.tableCell}>
                   {formatTimeRange(appointment.startTime, appointment.endTime)}
                 </td>
-                <td className={styles.tableCell}>{appointment.name || '-'}</td>
+                <td className={styles.tableCell}>{appointment.name || "-"}</td>
                 <td className={styles.tableCell}>
-                  <span className={`${styles.status} ${styles[appointment.status?.toLowerCase() || 'pending']}`}>
-                    {appointment.status || 'Pending'}
+                  <span
+                    className={`${styles.status} ${
+                      styles[appointment.status?.toLowerCase() || "pending"]
+                    }`}
+                  >
+                    {appointment.status || "Pending"}
                   </span>
                 </td>
                 <td className={styles.tableButtonCell}>
                   <button
-                    className={getButtonClasses(appointment, 'reject')}
+                    className={getButtonClasses(appointment, "reject")}
                     disabled={isActionDisabled(appointment)}
-                    aria-label="Reject appointment"
+                    aria-label="Mark as no show"
                     onClick={() => handleRejectClick(appointment)}
                   >
                     X
@@ -133,9 +128,9 @@ export default function AppointmentTable({ user, eventID }) {
                 </td>
                 <td className={styles.tableButtonCell}>
                   <button
-                    className={getButtonClasses(appointment, 'approve')}
+                    className={getButtonClasses(appointment, "approve")}
                     disabled={isActionDisabled(appointment)}
-                    aria-label="Approve appointment"
+                    aria-label="Mark as completed"
                     onClick={() => handleApproveClick(appointment)}
                   >
                     ✓
@@ -163,6 +158,7 @@ export default function AppointmentTable({ user, eventID }) {
         <AppointmentNoShow
           onClose={closeRejectModal}
           appointment={selectedAppointment}
+          onDeleteSuccess={handleDeleteSuccess}
         />
       )}
     </div>
