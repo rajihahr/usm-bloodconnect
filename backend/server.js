@@ -11,7 +11,7 @@ const saltRounds = 10;
 const app = express();
 
 // Middleware setup
-app.use(express.json());
+app.use(express.json()); 
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -28,8 +28,8 @@ app.use(session({
 
 // Updated CORS configuration to allow credentials
 app.use(cors({
-  origin: "https://bloodconnect.site",
-  // origin: "http://localhost:3000",
+  // origin: "https://bloodconnect.site",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
   credentials: true
@@ -831,6 +831,6 @@ app.get("/bloodbank", (req, res) => {
   });
 });
 
-app.listen(8081, () => {
+app.listen(8081, '0.0.0.0', () => {
   console.log("Listening on port 8081");
 });
