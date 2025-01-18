@@ -28,8 +28,8 @@ const BloodTypeBarChart = ({ bloodTypes }) => {
       {
         label: "Blood Units",
         data: bloodTypes.map((bloodType) => bloodType.quantity),
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: bloodTypes.map(() => "rgba(255, 99, 132, 0.2)"),
+        borderColor: bloodTypes.map(() => "rgba(255, 99, 132, 1)"),
         borderWidth: 1,
       },
     ],
@@ -41,6 +41,26 @@ const BloodTypeBarChart = ({ bloodTypes }) => {
     scales: {
       y: {
         beginAtZero: true,
+        title: {
+          display: true,
+          text: "Units",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Blood Type",
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Blood Bank Inventory",
       },
     },
   };

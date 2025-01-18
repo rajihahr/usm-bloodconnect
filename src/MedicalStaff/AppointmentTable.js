@@ -4,13 +4,13 @@ import AppointmentStatus from './AppointmentStatus';
 import AppointmentNoShow from './AppointmentNoShow';
 
 function formatTime(timeString) {
-  if (!timeString) return ''; // Check if timeString is undefined
-  const [hours, minutes] = timeString.split(':');
+  if (!timeString) return ""; // Check if timeString is undefined
+  const [hours, minutes] = timeString.split(":");
   const date = new Date();
   date.setHours(hours, minutes);
-  return date.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -21,40 +21,76 @@ export default function AppointmentTable({ user, eventID }) {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const staffID = user?.id;
 
-  useEffect(() => {
+  const fetchAppointments = () => {
     if (!staffID || !eventID) return;
 
     fetch(`http://localhost:8081/staff-appointments/${staffID}/${eventID}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Fetched appointments:', data); // Log the fetched data
+        console.log('Fetched appointments:', data);
         setAppointments(data.events || []);
       })
       .catch(error => console.error('Error fetching appointments:', error));
+  };
+
+  useEffect(() => {
+    fetchAppointments();
   }, [staffID, eventID]);
 
+  const isActionDisabled = (appointment) => {
+    return !appointment.name || 
+           appointment.status === 'Completed' || 
+           appointment.status === 'No Show';
+  };
+
+  const getButtonClasses = (appointment, type) => {
+    const baseClass = styles.actionButton;
+    if (isActionDisabled(appointment)) {
+      return `${baseClass} ${styles.disabledButton}`;
+    }
+    return `${baseClass} ${type === 'reject' ? styles.rejectButton : styles.approveButton}`;
+  };
+
   const handleApproveClick = (appointment) => {
+    console.log('Selected appointment:', appointment);
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
   };
 
-  const handleRejectClick = (appointment) => {
-    setSelectedAppointment(appointment);
-    setIsRejectModalOpen(true);
+  const handleRejectClick = async (appointment) => {
+    try {
+      const response = await fetch(`http://localhost:8081/appointments/${appointment.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete appointment');
+      }
+
+      fetchAppointments(); // Refresh appointments after deleting
+      
+      // Show success message (optional)
+      alert('Appointment marked as no-show and deleted successfully');
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      alert('Failed to delete appointment. Please try again.');
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAppointment(null);
+    fetchAppointments(); // Refresh appointments after closing modal
   };
 
   const closeRejectModal = () => {
     setIsRejectModalOpen(false);
     setSelectedAppointment(null);
+    fetchAppointments(); // Refresh appointments after closing modal
   };
 
   const formatTimeRange = (startTime, endTime) => {
-    return `${formatTime(startTime)} - ${formatTime(endTime)}`; // Concatenate startTime and endTime
+    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
   };
 
   return (
@@ -65,6 +101,7 @@ export default function AppointmentTable({ user, eventID }) {
             <th className={styles.headerCell}>No.</th>
             <th className={styles.headerCell}>Timeslot</th>
             <th className={styles.headerCell}>Donor Name</th>
+            <th className={styles.headerCell}>Status</th>
             <th className={styles.headerCellButton}>No Show</th>
             <th className={styles.headerCellButton}>Completed</th>
           </tr>
@@ -79,12 +116,15 @@ export default function AppointmentTable({ user, eventID }) {
                   {formatTimeRange(appointment.startTime, appointment.endTime)}
                 </td>
                 <td className={styles.tableCell}>{appointment.name || '-'}</td>
+                <td className={styles.tableCell}>
+                  <span className={`${styles.status} ${styles[appointment.status?.toLowerCase() || 'pending']}`}>
+                    {appointment.status || 'Pending'}
+                  </span>
+                </td>
                 <td className={styles.tableButtonCell}>
                   <button
-                    className={`${styles.actionButton} ${
-                      appointment.name ? styles.rejectButton : styles.disabledButton
-                    }`}
-                    disabled={!appointment.name}
+                    className={getButtonClasses(appointment, 'reject')}
+                    disabled={isActionDisabled(appointment)}
                     aria-label="Reject appointment"
                     onClick={() => handleRejectClick(appointment)}
                   >
@@ -93,10 +133,8 @@ export default function AppointmentTable({ user, eventID }) {
                 </td>
                 <td className={styles.tableButtonCell}>
                   <button
-                    className={`${styles.actionButton} ${
-                      appointment.name ? styles.approveButton : styles.disabledButton
-                    }`}
-                    disabled={!appointment.name}
+                    className={getButtonClasses(appointment, 'approve')}
+                    disabled={isActionDisabled(appointment)}
                     aria-label="Approve appointment"
                     onClick={() => handleApproveClick(appointment)}
                   >
@@ -107,7 +145,7 @@ export default function AppointmentTable({ user, eventID }) {
             ))
           ) : (
             <tr>
-              <td colSpan="5" className={styles.noAppointments}>
+              <td colSpan="6" className={styles.noAppointments}>
                 No appointments found for this staff member and event.
               </td>
             </tr>
@@ -115,8 +153,18 @@ export default function AppointmentTable({ user, eventID }) {
         </tbody>
       </table>
 
-      {isModalOpen && <AppointmentStatus onClose={closeModal} appointment={selectedAppointment} />}
-      {isRejectModalOpen && (<AppointmentNoShow onClose={closeRejectModal} appointment={selectedAppointment} />)}
+      {isModalOpen && (
+        <AppointmentStatus
+          onClose={closeModal}
+          appointment={selectedAppointment}
+        />
+      )}
+      {isRejectModalOpen && (
+        <AppointmentNoShow
+          onClose={closeRejectModal}
+          appointment={selectedAppointment}
+        />
+      )}
     </div>
   );
 }
