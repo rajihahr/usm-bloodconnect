@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import styles from './AppointmentTable.module.css';
 import AppointmentStatus from './AppointmentStatus';
 import AppointmentNoShow from './AppointmentNoShow';
@@ -21,7 +21,7 @@ export default function AppointmentTable({ user, eventID }) {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const staffID = user?.id;
 
-  const fetchAppointments = () => {
+  const fetchAppointments = useCallback(() => {
     if (!staffID || !eventID) return;
 
     fetch(`http://localhost:8081/staff-appointments/${staffID}/${eventID}`)
@@ -31,11 +31,11 @@ export default function AppointmentTable({ user, eventID }) {
         setAppointments(data.events || []);
       })
       .catch(error => console.error('Error fetching appointments:', error));
-  };
+  }, [staffID, eventID]);
 
   useEffect(() => {
     fetchAppointments();
-  }, [staffID, eventID]);
+  }, [fetchAppointments]);
 
   const isActionDisabled = (appointment) => {
     return !appointment.name || 

@@ -16,10 +16,6 @@ export const BloodBankDashboard = () => {
     totalBloodUnits: 0,
   });
 
-  const handleRefresh = () => {
-    fetchBloodBankData();
-  };
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

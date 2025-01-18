@@ -11,7 +11,7 @@ function AppointmentNoShow({ appointment, onClose, onDeleteSuccess }) {
 
     try {
       const response = await fetch(
-        'http://localhost:8081/appointments/${appointment.id}',
+        `http://localhost:8081/appointments/${appointment.id}`,
         {
           method: "DELETE",
         }

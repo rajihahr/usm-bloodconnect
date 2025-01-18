@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import styles from './AppointmentStatus.module.css';
 
 function AppointmentStatus({ appointment, onClose }) {
