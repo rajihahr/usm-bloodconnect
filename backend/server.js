@@ -21,15 +21,15 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,
+    httpOnly: false,
     maxAge: 60 * 60 * 1000 // 1 hour
   }
 }));
 
 // Updated CORS configuration to allow credentials
 app.use(cors({
-  // origin: "https://bloodconnect.site",
-  origin: "http://localhost:3000",
+  origin: "https://bloodconnect.site",
+  // origin: "http://localhost:3000",
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
   credentials: true
