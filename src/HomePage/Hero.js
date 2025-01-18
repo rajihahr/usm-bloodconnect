@@ -40,7 +40,7 @@ const Hero = ({ user }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch("https://bloodconnect.site/");
+        const response = await fetch("http://localhost:8081/");
         const data = await response.json();
         console.log("Fetched event data:", data);
         if (data.event) {
