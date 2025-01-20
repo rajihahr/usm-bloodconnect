@@ -33,7 +33,7 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
 
   // Fetch questions from the backend
   useEffect(() => {
-    fetch("http://localhost:8081/questions")
+    fetch(`${process.env.REACT_APP_API_URL}/questions`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -71,7 +71,7 @@ export default function QuestionnaireForm({ user }) {  // Add user prop
     }));
   
     // Send the responses to the backend
-    fetch("http://localhost:8081/saveResponses", {
+    fetch(`${process.env.REACT_APP_API_URL}/saveResponses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
