@@ -1,25 +1,26 @@
 const mysql = require("mysql");
-require("dotenv").config(); // Load environment variables
 
 const db = mysql.createPool({
-    connectionLimit: process.env.DB_CONNECTION_LIMIT || 10,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+  connectionLimit: 10,
+  host: "srv1761.hstgr.io",
+  user: "u858196522_cmt322group8",
+  password: "bloodconnect_USM_group8",
+  database: "u858196522_bloodConnect",
 });
 
+// Function to handle reconnection
 function handleDisconnect() {
-    db.getConnection((err, connection) => {
-        if (err) {
-            console.error("Error connecting to database:", err);
-            setTimeout(handleDisconnect, 2000); // Retry after 2 seconds
-        } else {
-            console.log("Connected to database");
-            if (connection) connection.release();
-        }
-    });
+  db.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error connecting to database:", err);
+      setTimeout(handleDisconnect, 2000); // Retry after 2 seconds
+    } else {
+      console.log("Connected to database");
+      if (connection) connection.release();
+    }
+  });
 }
 
-handleDisconnect();
+handleDisconnect(); // Start the connection handling
+
 module.exports = db;

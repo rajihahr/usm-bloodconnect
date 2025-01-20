@@ -39,7 +39,7 @@ const BloodConnectApp = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/check-auth`, {
+        const response = await fetch('http://localhost:8081/check-auth', {
           credentials: 'include'
         });
         const data = await response.json();

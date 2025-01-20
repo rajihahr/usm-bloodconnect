@@ -11,7 +11,7 @@ const saltRounds = 10;
 const app = express();
 
 // Middleware setup
-app.use(express.json()); 
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -22,19 +22,13 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    domain: process.env.NODE_ENV === 'production' ? '.bloodconnect.site' : 'localhost',
-    maxAge: 60 * 60 * 1000, // 1 hour
-    path: '/'
+    maxAge: 60 * 60 * 1000 // 1 hour
   }
 }));
 
 // Updated CORS configuration to allow credentials
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-  ? ['https://bloodconnect.site', 'https://www.bloodconnect.site']
-  : 'http://localhost:3000',
+  origin: ["https://bloodconnect.site", "http://localhost:3000"],
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
   credentials: true

@@ -2,7 +2,6 @@
   "name": "usm-bloodconnect",
   "version": "0.1.0",
   "homepage": "https://bloodconnect.site",
-  "proxy": "http://localhost:8081",
   "private": true,
   "dependencies": {
     "@fontsource/montserrat": "^5.1.0",
