@@ -20,16 +20,22 @@ app.use(session({
   secret: '4eba08474238b7a30245666cec4ab4b199199473a2fc9020b8d766cf2cf8731f',
   resave: false,
   saveUninitialized: false,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  domain: process.env.NODE_ENV === 'production' ? '.bloodconnect.site' : 'localhost',
   cookie: {
-    httpOnly: false,
-    maxAge: 60 * 60 * 1000 // 1 hour
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    domain: process.env.NODE_ENV === 'production' ? '.bloodconnect.site' : 'localhost',
+    maxAge: 60 * 60 * 1000, // 1 hour
+    path: '/'
   }
 }));
 
 // Updated CORS configuration to allow credentials
 app.use(cors({
-  origin: "https://bloodconnect.site",
-  // origin: "http://localhost:3000",
+  origin: ["https://bloodconnect.site", "http://localhost:3000"],
   methods: ["GET", "POST", "DELETE", "PUT"],
   allowedHeaders: ["Content-Type"],
   credentials: true
